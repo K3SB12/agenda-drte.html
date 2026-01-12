@@ -3,777 +3,1260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Agenda Digital DRTE - Sistema Integral de Gestión Profesional">
-    <meta name="theme-color" content="#1a1a2e">
-    <title>Agenda Digital DRTE | Sistema Profesional MEP</title>
+    <meta name="description" content="Sistema Integral de Gestión DRTE MEP - Bitácora, Tareas, Archivos y Reportes">
+    <title>Agenda DRTE MEP | Sistema Profesional</title>
     
-    <!-- ENLACES EXTERNOS DRTE -->
+    <!-- Librerías -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@7.7.0/build/index.js"></script>
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     
     <style>
-        /* ===== ESTILOS PROFESIONALES COMPLETOS ===== */
+        /* VARIABLES MEP */
         :root {
-            --color-primary: #1a1a2e; --color-secondary: #16213e; --color-accent: #0f3460;
-            --color-success: #00b894; --color-warning: #fdcb6e; --color-danger: #d63031;
-            --color-info: #0984e3; --color-light: #f8f9fa; --color-dark: #2d3436;
-            --border-radius: 12px; --box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --transition: all 0.3s ease; --glass-bg: rgba(255,255,255,0.05);
+            --mep-blue: #0056a6;
+            --mep-green: #00a859;
+            --mep-orange: #f26522;
+            --mep-dark: #1a1a2e;
+            --mep-light: #f8f9fa;
+            --border-radius: 10px;
+            --box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-            color: var(--color-light);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
             min-height: 100vh;
             line-height: 1.6;
         }
         
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-
-        /* ===== HEADER CORPORATIVO ===== */
+        
+        /* HEADER MEP */
         .header {
-            background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: var(--border-radius);
-            padding: 20px 30px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px 30px;
+            margin-bottom: 25px;
             box-shadow: var(--box-shadow);
+            border-left: 5px solid var(--mep-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
         }
         
         .brand {
-            display: flex; align-items: center; gap: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
         
         .logo {
-            width: 60px; height: 60px; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-            border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center;
-            font-size: 28px; color: white; box-shadow: 0 5px 15px rgba(0,198,255,0.4);
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--mep-blue) 0%, var(--mep-green) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 5px 15px rgba(0,86,166,0.3);
         }
         
-        .brand-info h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
-        .brand-info p { color: rgba(255,255,255,0.7); font-size: 0.9rem; }
+        .brand-info h1 {
+            color: var(--mep-blue);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
         
-        /* ===== PANEL DE ENLACES EXTERNOS DRTE ===== */
-        .external-links-panel {
-            background: rgba(0,0,0,0.3);
-            padding: 15px 30px;
+        .brand-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* PANEL ENLACES MEP */
+        .links-panel {
+            background: white;
             border-radius: var(--border-radius);
-            margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
         }
         
         .links-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
             margin-top: 15px;
         }
         
-        .external-link {
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
+        .link-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 0.9rem;
-            padding: 12px 20px;
-            border-radius: var(--border-radius);
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #444;
             transition: var(--transition);
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid #e9ecef;
         }
         
-        .external-link:hover {
-            background: rgba(255,255,255,0.15);
+        .link-item:hover {
+            background: var(--mep-blue);
             color: white;
-            transform: translateY(-3px);
-            border-color: #00c6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,86,166,0.2);
         }
         
-        .external-link i {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
+        .link-item i { width: 20px; text-align: center; }
         
-        /* ===== DASHBOARD PRINCIPAL ===== */
-        .dashboard-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-bottom: 30px;
-        }
-        
-        .card {
-            background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: var(--border-radius);
-            padding: 25px; border: 1px solid rgba(255,255,255,0.1); box-shadow: var(--box-shadow);
-        }
-        
-        .card-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-        }
-        
-        .card-header h2 { font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        
-        /* ===== SISTEMA DE PESTAÑAS ===== */
+        /* TABS PRINCIPALES */
         .tabs-container {
-            margin-bottom: 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 25px;
         }
         
-        .tabs {
+        .tabs-header {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 20px;
             flex-wrap: wrap;
         }
         
         .tab-btn {
-            padding: 12px 25px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: var(--border-radius);
-            color: white;
+            padding: 18px 25px;
+            background: none;
+            border: none;
+            color: #666;
+            font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .tab-btn.active {
-            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-            border-color: transparent;
+            color: var(--mep-blue);
+            border-bottom-color: var(--mep-blue);
+            background: white;
         }
         
         .tab-content {
             display: none;
+            padding: 25px;
+            min-height: 500px;
         }
         
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
+        .tab-content.active { display: block; }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* ===== BITÁCORA DIARIA ===== */
-        .journal-editor {
-            min-height: 400px;
-            background: rgba(255,255,255,0.05);
+        /* CARDS GENERALES */
+        .card {
+            background: white;
             border-radius: var(--border-radius);
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+        
+        .card-header h2 {
+            color: var(--mep-blue);
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* BOTONES MEP */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--mep-blue);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--mep-green);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--mep-orange);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* FORMULARIOS */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; color: #444; }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--mep-blue);
+            box-shadow: 0 0 0 3px rgba(0,86,166,0.1);
+        }
+        
+        /* EDITOR BITÁCORA */
+        .journal-editor {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
         }
         
         .journal-toolbar {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
             display: flex;
             gap: 10px;
-            padding: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
             flex-wrap: wrap;
         }
         
         .toolbar-btn {
             padding: 8px 15px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            border-radius: 8px;
-            color: white;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 0.9rem;
         }
         
-        .journal-date-selector {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        #journal-content {
+            min-height: 300px;
+            padding: 20px;
+            outline: none;
+        }
+        
+        /* SISTEMA ARCHIVOS */
+        .file-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: var(--border-radius);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f8f9fa;
             margin-bottom: 20px;
         }
         
-        /* ===== SISTEMA DE ARCHIVOS POR FECHA ===== */
-        .file-date-navigation {
-            display: flex;
-            align-items: center;
+        .file-upload-area.dragover {
+            border-color: var(--mep-green);
+            background: rgba(0,168,89,0.05);
+        }
+        
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
         
-        .date-breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.7);
+        .file-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            transition: var(--transition);
         }
         
-        .file-structure {
-            background: rgba(255,255,255,0.05);
+        .file-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* CALENDARIO */
+        .calendar-container {
+            background: white;
             border-radius: var(--border-radius);
             padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
         
-        .folder {
-            margin-bottom: 15px;
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
             cursor: pointer;
+            transition: var(--transition);
         }
         
-        .folder-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: rgba(255,255,255,0.07);
-            border-radius: 8px;
-        }
+        .calendar-day:hover { background: #f8f9fa; }
+        .calendar-day.today { background: #e3f2fd; border-color: var(--mep-blue); }
+        .calendar-day.has-files { background: #e8f5e9; border-color: var(--mep-green); }
+        .calendar-day.selected { background: var(--mep-blue); color: white; }
         
-        .folder-content {
-            padding-left: 30px;
-            margin-top: 10px;
-            display: none;
-        }
-        
-        .folder-content.expanded {
-            display: block;
-        }
-        
-        .file-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            margin: 5px 0;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-        }
-        
-        /* ===== BOTONES PROFESIONALES ===== */
-        .btn {
-            padding: 12px 24px; border: none; border-radius: var(--border-radius); font-weight: 600;
-            cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 10px;
-            font-size: 0.95rem; text-decoration: none; user-select: none;
-        }
-        
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
-        
-        .btn-primary { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); color: white; }
-        .btn-secondary { background: var(--glass-bg); color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-success { background: var(--color-success); color: white; }
-        .btn-danger { background: var(--color-danger); color: white; }
-        .btn-email { background: linear-gradient(135deg, #0078D4 0%, #005a9e 100%); color: white; }
-        .btn-print { background: linear-gradient(135deg, #666666 0%, #333333 100%); color: white; }
-        
-        /* ===== FORMULARIOS ===== */
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
-        
-        .form-control {
-            width: 100%; padding: 14px 18px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: var(--border-radius); color: white; font-size: 1rem; transition: var(--transition);
-        }
-        
-        .form-control:focus {
-            outline: none; border-color: #00c6ff; background: rgba(255,255,255,0.1);
-            box-shadow: 0 0 0 3px rgba(0,198,255,0.1);
-        }
-        
-        /* ===== RESPONSIVE ===== */
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .header { flex-direction: column; gap: 20px; }
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+            .tabs-header { flex-direction: column; }
+            .tab-btn { width: 100%; justify-content: center; }
             .links-grid { grid-template-columns: 1fr; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .tabs { flex-direction: column; }
-            .tab-btn { width: 100%; }
+            .file-grid { grid-template-columns: repeat(2, 1fr); }
         }
         
-        /* ===== UTILIDADES ===== */
-        .text-muted { color: rgba(255,255,255,0.5); }
+        /* UTILIDADES */
         .mt-3 { margin-top: 15px; }
         .mb-3 { margin-bottom: 15px; }
-        .btn-block { width: 100%; }
+        .d-flex { display: flex; }
+        .gap-3 { gap: 15px; }
+        .text-center { text-align: center; }
+        .w-100 { width: 100%; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- HEADER CORPORATIVO -->
+        <!-- HEADER MEP -->
         <header class="header">
             <div class="brand">
                 <div class="logo">
                     <i class="fas fa-chalkboard-teacher"></i>
                 </div>
                 <div class="brand-info">
-                    <h1>Agenda Digital DRTE - Sistema Profesional</h1>
-                    <p>Departamento de Investigación, Desarrollo e Implementación | MEP Costa Rica</p>
-                    <p style="font-size: 0.8rem; margin-top: 5px;">
-                        <i class="fas fa-user-tie"></i> Asesor Nacional: Kevin Sánchez Bogarín
+                    <h1>Agenda DRTE MEP - Sistema Profesional</h1>
+                    <p>Departamento de Investigación, Desarrollo e Implementación</p>
+                    <p style="font-size: 0.85rem; color: var(--mep-blue);">
+                        <i class="fas fa-user-tie"></i> Asesor: Kevin Sánchez Bogarín
                     </p>
                 </div>
             </div>
-            <div class="header-controls">
-                <div id="current-datetime" style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
-                    <i class="fas fa-clock"></i> Cargando...
-                </div>
+            <div id="current-datetime" style="color: #666; font-size: 0.9rem;">
+                <i class="fas fa-clock"></i> <span id="datetime-text">Cargando...</span>
             </div>
         </header>
 
-        <!-- PANEL DE ENLACES INSTITUCIONALES MEP -->
-        <div class="external-links-panel">
-            <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+        <!-- PANEL ENLACES MEP -->
+        <div class="links-panel">
+            <h3 style="color: var(--mep-blue); margin-bottom: 15px;">
                 <i class="fas fa-external-link-alt"></i> Enlaces Institucionales MEP
             </h3>
             <div class="links-grid">
-                <a href="https://outlook.office.com/" class="external-link" target="_blank">
-                    <i class="fas fa-envelope" style="color: #0078D4;"></i> Correo Institucional MEP
+                <a href="https://outlook.office.com/" class="link-item" target="_blank">
+                    <i class="fas fa-envelope" style="color: #0078D4;"></i> Correo MEP
                 </a>
-                <a href="https://m365.cloud.microsoft/launch/onenote?auth=2" class="external-link" target="_blank">
-                    <i class="fas fa-sticky-note" style="color: #80397b;"></i> OneNote Institucional
+                <a href="https://m365.cloud.microsoft.com/launch/onenote?auth=2" class="link-item" target="_blank">
+                    <i class="fas fa-sticky-note" style="color: #80397b;"></i> OneNote
                 </a>
-                <a href="https://adminmepcr-my.sharepoint.com/:o:/r/personal/kevin_sanchez_bogarin_mep_go_cr/Documents/Notebooks/Informe%20Teletrabajo%20Kevin%20S%C3%A1nchez%20B_2025?d=w15530935b0e744b7bac3d76e43abfd42&csf=1&web=1&e=w3sAuX" 
-                   class="external-link" target="_blank">
-                    <i class="fas fa-book" style="color: #00a859;"></i> Bitácora Teletrabajo 2025
+                <a href="https://adminmepcr-my.sharepoint.com/:o:/r/personal/kevin_sanchez_bogarin_mep_go_cr/Documents/Notebooks/Informe%20Teletrabajo%20Kevin%20S%C3%A1nchez%20B_2025" class="link-item" target="_blank">
+                    <i class="fas fa-book" style="color: #00a859;"></i> Bitácora 2025
                 </a>
-                <a href="https://www.youtube.com/" class="external-link" target="_blank">
-                    <i class="fab fa-youtube" style="color: #ff0000;"></i> YouTube (Investigación)
+                <a href="https://pnft.mep.go.cr/asesoriapnft/app/home" class="link-item" target="_blank">
+                    <i class="fas fa-chart-line" style="color: #0066cc;"></i> Sistema PNFT
                 </a>
-                <a href="https://www.symbaloo.com/home/mix/13eP7Bh97Y" class="external-link" target="_blank">
-                    <i class="fas fa-th-large" style="color: #ff6600;"></i> Symbaloo Dashboard
-                </a>
-                <a href="https://pnft.mep.go.cr/asesoriapnft/app/home" class="external-link" target="_blank">
-                    <i class="fas fa-chart-line" style="color: #0066cc;"></i> Sistema PNFT MEP
-                </a>
-                <a href="https://adminmepcr.sharepoint.com/sites/DRTE-Intranet/DOCUMENTOSASESORESDRTE/Forms/AllItems.aspx?id=%2Fsites%2FDRTE%2DIntranet%2FDOCUMENTOSASESORESDRTE%2FINFORMES%2Fkevin%2Esanchez%2Ebogarin%40mep%2Ego%2Ecr&viewid=13f17d12%2Dcdb7%2D4a0b%2D95e3%2Dbc4ca8b3c9ac" 
-                   class="external-link" target="_blank">
+                <a href="https://adminmepcr.sharepoint.com/sites/DRTE-Intranet/DOCUMENTOSASESORESDRTE/Forms/AllItems.aspx" class="link-item" target="_blank">
                     <i class="fas fa-folder" style="color: #ff5722;"></i> Documentos DRTE
                 </a>
-                <a href="https://adminmepcr.sharepoint.com/sites/DiseoMallaCurricular-Enmallados/Documentos%20compartidos/Forms/AllItems.aspx?id=%2Fsites%2FDiseoMallaCurricular%2DEnmallados%2FDocumentos%20compartidos%2FExpediente%20PNFT%2F2025&viewid=254250fe%2D08d1%2D4bf0%2D9c90%2Deb1b60941e1c&e=5%3A0b732e76068e4cb0a415be46f8839e65&sharingv2=true&fromShare=true&at=9" 
-                   class="external-link" target="_blank">
-                    <i class="fas fa-graduation-cap" style="color: #9c27b0;"></i> Diseño Malla Curricular
-                </a>
-                <a href="https://adminmepcr.sharepoint.com/sites/repositorio-pnft" class="external-link" target="_blank">
-                    <i class="fas fa-database" style="color: #4caf50;"></i> Repositorio PNFT
-                </a>
-                <a href="https://www.mep.go.cr/" class="external-link" target="_blank">
-                    <i class="fas fa-school" style="color: #00b894;"></i> MEP Oficial
-                </a>
-                <a href="https://www.drte.mep.go.cr/" class="external-link" target="_blank">
-                    <i class="fas fa-chalkboard-teacher" style="color: #0984e3;"></i> DRTE Portal
+                <a href="https://www.symbaloo.com/home/mix/13eP7Bh97Y" class="link-item" target="_blank">
+                    <i class="fas fa-th-large" style="color: #ff6600;"></i> Symbaloo
                 </a>
             </div>
         </div>
 
-        <!-- SISTEMA DE PESTAÑAS PRINCIPAL -->
+        <!-- SISTEMA DE TABS PRINCIPALES -->
         <div class="tabs-container">
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('bitacora')">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="dashboard">
+                    <i class="fas fa-home"></i> Dashboard
+                </button>
+                <button class="tab-btn" data-tab="bitacora">
                     <i class="fas fa-book"></i> Bitácora Diaria
                 </button>
-                <button class="tab-btn" onclick="switchTab('tareas')">
-                    <i class="fas fa-tasks"></i> Gestión de Tareas
+                <button class="tab-btn" data-tab="tareas">
+                    <i class="fas fa-tasks"></i> Mis Tareas (13 Funciones)
                 </button>
-                <button class="tab-btn" onclick="switchTab('archivos')">
+                <button class="tab-btn" data-tab="archivos">
                     <i class="fas fa-folder"></i> Archivos por Fecha
                 </button>
-                <button class="tab-btn" onclick="switchTab('reportes')">
-                    <i class="fas fa-chart-bar"></i> Reportes
+                <button class="tab-btn" data-tab="calendario">
+                    <i class="fas fa-calendar"></i> Calendario
                 </button>
-                <button class="tab-btn" onclick="switchTab('correo')">
-                    <i class="fas fa-envelope"></i> Correo MEP
+                <button class="tab-btn" data-tab="reportes">
+                    <i class="fas fa-chart-bar"></i> Reportes
                 </button>
             </div>
 
-            <!-- PESTAÑA BITÁCORA DIARIA -->
-            <div id="tab-bitacora" class="tab-content active">
+            <!-- DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-line"></i> Resumen del Día</h2>
+                        <span id="today-date" style="color: var(--mep-blue); font-weight: 600;"></span>
+                    </div>
+                    
+                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div class="stat-item" style="background: #e3f2fd; padding: 20px; border-radius: 8px;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="background: var(--mep-blue); color: white; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 2rem; font-weight: 700;" id="total-tasks">0</div>
+                                    <div style="color: #666;">Tareas Totales</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item" style="background: #e8f5e9; padding: 20px; border-radius: 8px;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="background: var(--mep-green); color: white; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 2rem; font-weight: 700;" id="completed-tasks">0</div>
+                                    <div style="color: #666;">Completadas Hoy</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item" style="background: #fff3e0; padding: 20px; border-radius: 8px;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="background: var(--mep-orange); color: white; width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-file"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size: 2rem; font-weight: 700;" id="total-files">0</div>
+                                    <div style="color: #666;">Archivos Totales</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <h3 style="color: var(--mep-blue); margin-bottom: 15px;">
+                            <i class="fas fa-bolt"></i> Acciones Rápidas
+                        </h3>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <button class="btn btn-primary" onclick="switchTab('bitacora')">
+                                <i class="fas fa-plus"></i> Nueva Bitácora
+                            </button>
+                            <button class="btn btn-success" onclick="switchTab('tareas')">
+                                <i class="fas fa-tasks"></i> Agregar Tarea
+                            </button>
+                            <button class="btn btn-warning" onclick="switchTab('archivos')">
+                                <i class="fas fa-upload"></i> Subir Archivos
+                            </button>
+                            <button class="btn btn-secondary" onclick="generateDailyReport()">
+                                <i class="fas fa-file-pdf"></i> Reporte Diario
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BITÁCORA DIARIA -->
+            <div id="tab-bitacora" class="tab-content">
                 <div class="card">
                     <div class="card-header">
                         <h2><i class="fas fa-book-open"></i> Bitácora Diaria Profesional</h2>
-                        <button class="btn btn-primary" onclick="saveJournal()">
-                            <i class="fas fa-save"></i> Guardar Bitácora
-                        </button>
+                        <div class="d-flex gap-3">
+                            <button class="btn btn-secondary" onclick="loadTodayJournal()">
+                                <i class="fas fa-calendar-day"></i> Cargar Hoy
+                            </button>
+                            <button class="btn btn-primary" onclick="saveJournal()">
+                                <i class="fas fa-save"></i> Guardar
+                            </button>
+                        </div>
                     </div>
                     
-                    <div class="journal-date-selector">
-                        <input type="date" id="journal-date" class="form-control" style="width: 200px;">
-                        <button class="btn btn-secondary" onclick="loadTodayJournal()">
-                            <i class="fas fa-calendar-day"></i> Hoy
-                        </button>
-                        <button class="btn btn-secondary" onclick="loadJournal()">
-                            <i class="fas fa-search"></i> Cargar
-                        </button>
+                    <div class="form-group">
+                        <label class="form-label">Fecha de la Bitácora</label>
+                        <div class="d-flex gap-3">
+                            <input type="date" id="journal-date" class="form-control" style="width: 200px;">
+                            <button class="btn btn-secondary" onclick="loadJournal()">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Título del Día</label>
+                        <input type="text" id="journal-title" class="form-control" placeholder="Ej: Revisión curricular y coordinación equipo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Plantillas Rápidas</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <button class="btn btn-secondary" onclick="insertJournalTemplate('reunion')">
+                                <i class="fas fa-users"></i> Reunión
+                            </button>
+                            <button class="btn btn-secondary" onclick="insertJournalTemplate('capacitacion')">
+                                <i class="fas fa-graduation-cap"></i> Capacitación
+                            </button>
+                            <button class="btn btn-secondary" onclick="insertJournalTemplate('informe')">
+                                <i class="fas fa-file-alt"></i> Informe
+                            </button>
+                            <button class="btn btn-secondary" onclick="insertJournalTemplate('coordinacion')">
+                                <i class="fas fa-handshake"></i> Coordinación
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="journal-editor">
                         <div class="journal-toolbar">
-                            <select id="journal-category" class="form-control" style="width: 200px;">
-                                <option value="general">📋 Actividades Generales</option>
-                                <option value="pntf">📊 PNFT - Actividades Principales</option>
-                                <option value="reunion">👥 Reuniones & Coordinaciones</option>
-                                <option value="capacitacion">🎓 Capacitación & Talleres</option>
-                                <option value="diseño">🎨 Diseño Instruccional</option>
-                                <option value="informe">📄 Informes & Documentación</option>
-                                <option value="sistema">💻 Sistemas & Actualización</option>
-                                <option value="teletrabajo">🏠 Teletrabajo</option>
-                            </select>
-                            
-                            <input type="text" id="journal-title" class="form-control" placeholder="Título de la actividad" style="flex: 1;">
-                            
-                            <input type="time" id="journal-time" class="form-control" style="width: 150px;">
-                            
-                            <button class="toolbar-btn" onclick="insertTemplate('actividad')">
-                                <i class="fas fa-plus"></i> Nueva Actividad
+                            <button class="toolbar-btn" onclick="formatText('bold')">
+                                <i class="fas fa-bold"></i>
                             </button>
-                            
+                            <button class="toolbar-btn" onclick="formatText('italic')">
+                                <i class="fas fa-italic"></i>
+                            </button>
+                            <button class="toolbar-btn" onclick="insertBulletList()">
+                                <i class="fas fa-list-ul"></i>
+                            </button>
+                            <button class="toolbar-btn" onclick="insertNumberedList()">
+                                <i class="fas fa-list-ol"></i>
+                            </button>
                             <button class="toolbar-btn" onclick="attachFileToJournal()">
-                                <i class="fas fa-paperclip"></i> Adjuntar Archivo
+                                <i class="fas fa-paperclip"></i> Adjuntar
                             </button>
                         </div>
-                        
-                        <div id="journal-content" style="padding: 20px; min-height: 300px;">
-                            <!-- Contenido de la bitácora se generará aquí -->
+                        <div id="journal-content" contenteditable="true">
+                            <h3>📋 Actividades del Día</h3>
+                            <p><strong>Hora:</strong> [Inserte hora]</p>
+                            <p><strong>Actividad:</strong> [Describa la actividad]</p>
+                            <p><strong>Resultados:</strong> [Resultados obtenidos]</p>
+                            <p><strong>Evidencias:</strong> [Archivos adjuntos]</p>
+                            <hr>
+                            <h3>🎯 Objetivos Cumplidos</h3>
+                            <ul>
+                                <li>[Objetivo 1]</li>
+                                <li>[Objetivo 2]</li>
+                            </ul>
                         </div>
                     </div>
                     
-                    <div style="margin-top: 20px;">
-                        <h3 style="margin-bottom: 15px;">Resumen del Día</h3>
-                        <textarea id="journal-summary" class="form-control" rows="4" 
-                                  placeholder="Escribe aquí el resumen ejecutivo del día..."></textarea>
+                    <div class="form-group mt-3">
+                        <label class="form-label">Resumen Ejecutivo</label>
+                        <textarea id="journal-summary" class="form-control" rows="3" 
+                                  placeholder="Resumen de los logros más importantes del día..."></textarea>
                     </div>
                     
-                    <div class="file-preview-container" id="journal-attachments" style="margin-top: 20px;">
+                    <div id="journal-attachments" class="mt-3">
                         <!-- Archivos adjuntos aparecerán aquí -->
                     </div>
                 </div>
             </div>
 
-            <!-- PESTAÑA GESTIÓN DE ARCHIVOS POR FECHA -->
+            <!-- MIS TAREAS (13 FUNCIONES) -->
+            <div id="tab-tareas" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-briefcase"></i> Mis 13 Funciones del Equipo DRTE</h2>
+                        <button class="btn btn-primary" onclick="openTaskModal()">
+                            <i class="fas fa-plus"></i> Nueva Tarea
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="d-flex gap-3 flex-wrap">
+                            <button class="btn btn-secondary active" onclick="filterTasks('all')">
+                                Todas
+                            </button>
+                            <button class="btn btn-secondary" onclick="filterTasks('pending')">
+                                Pendientes
+                            </button>
+                            <button class="btn btn-secondary" onclick="filterTasks('completed')">
+                                Completadas
+                            </button>
+                            <button class="btn btn-secondary" onclick="filterTasks('urgent')">
+                                Urgentes
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="tasks-container">
+                        <!-- Tareas cargadas dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ARCHIVOS POR FECHA -->
             <div id="tab-archivos" class="tab-content">
                 <div class="card">
                     <div class="card-header">
-                        <h2><i class="fas fa-folder-tree"></i> Sistema de Archivos Organizados por Fecha</h2>
+                        <h2><i class="fas fa-calendar-alt"></i> Archivos Organizados por Fecha</h2>
                         <button class="btn btn-primary" onclick="openFileUpload()">
                             <i class="fas fa-cloud-upload-alt"></i> Subir Archivos
                         </button>
                     </div>
                     
-                    <div class="file-date-navigation">
-                        <button class="btn btn-secondary" onclick="navigateDate('prev')">
-                            <i class="fas fa-chevron-left"></i> Anterior
-                        </button>
-                        
-                        <div class="date-breadcrumb">
-                            <span id="current-year" style="font-weight: bold;"></span>
-                            <i class="fas fa-chevron-right"></i>
-                            <span id="current-month" style="font-weight: bold;"></span>
-                            <i class="fas fa-chevron-right"></i>
-                            <span id="current-day" style="font-weight: bold;"></span>
+                    <div class="form-group">
+                        <label class="form-label">Seleccionar Fecha</label>
+                        <div class="d-flex gap-3 align-items-center">
+                            <button class="btn btn-secondary" onclick="prevDate()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <input type="date" id="file-date" class="form-control" style="width: 200px;">
+                            <button class="btn btn-secondary" onclick="nextDate()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <button class="btn btn-success" onclick="loadFilesForDate()">
+                                <i class="fas fa-search"></i> Ver Archivos
+                            </button>
                         </div>
-                        
-                        <button class="btn btn-secondary" onclick="navigateDate('next')">
-                            Siguiente <i class="fas fa-chevron-right"></i>
-                        </button>
-                        
-                        <input type="date" id="file-date-selector" class="form-control" style="width: 200px;">
-                        <button class="btn btn-secondary" onclick="goToSelectedDate()">
-                            <i class="fas fa-search"></i> Ir
-                        </button>
                     </div>
                     
-                    <!-- SISTEMA DE SUBIDA MEJORADO -->
-                    <div class="file-upload-system" id="file-drop-area" 
-                         onclick="document.getElementById('file-upload-input').click()"
-                         ondragover="handleDragOver(event)"
-                         ondragleave="handleDragLeave(event)"
-                         ondrop="handleFileDrop(event)">
-                        <i class="fas fa-cloud-upload-alt fa-3x" style="margin-bottom: 20px;"></i>
-                        <h3>Arrastra y suelta archivos aquí</h3>
+                    <div class="file-upload-area" id="file-drop-area" 
+                         onclick="document.getElementById('file-input').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x" style="color: #ccc; margin-bottom: 15px;"></i>
+                        <h4>Arrastra y suelta archivos aquí</h4>
                         <p>o haz clic para seleccionar</p>
-                        <p class="text-muted">Formatos: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, MP4, ZIP (Máx. 50MB)</p>
-                        <input type="file" id="file-upload-input" multiple style="display: none;" 
-                               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.mp4,.zip">
+                        <p style="color: #666; font-size: 0.9rem;">
+                            PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, CSV (Máx. 25MB)
+                        </p>
+                        <input type="file" id="file-input" multiple style="display: none;">
                     </div>
                     
-                    <!-- ESTRUCTURA DE CARPETAS POR FECHA -->
-                    <div class="file-structure" id="file-structure">
-                        <!-- Estructura generada dinámicamente -->
-                    </div>
-                    
-                    <!-- ESTADÍSTICAS DE ARCHIVOS -->
-                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                        <div class="stat-item">
-                            <div class="stat-icon" style="background: rgba(0,184,148,0.2); color: var(--color-success);">
-                                <i class="fas fa-database"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-label">Total Archivos</div>
-                                <div class="stat-value" id="total-files-count">0</div>
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-icon" style="background: rgba(9,132,227,0.2); color: var(--color-info);">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-label">Días con Archivos</div>
-                                <div class="stat-value" id="days-with-files">0</div>
-                            </div>
-                        </div>
-                        <div class="stat-icon" style="background: rgba(155,89,182,0.2); color: #9b59b6;">
-                            <i class="fas fa-hdd"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-label">Espacio Usado</div>
-                            <div class="stat-value" id="storage-used">0 MB</div>
-                        </div>
+                    <div id="files-container" class="file-grid">
+                        <!-- Archivos aparecerán aquí -->
                     </div>
                 </div>
             </div>
 
-            <!-- PESTAÑA CORREO MEP -->
-            <div id="tab-correo" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-envelope-open-text"></i> Sistema de Correo MEP Profesional</h2>
+            <!-- CALENDARIO -->
+            <div id="tab-calendario" class="tab-content">
+                <div class="calendar-container">
+                    <div class="calendar-nav">
+                        <button class="btn btn-secondary" onclick="prevMonth()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h2 id="calendar-month" style="color: var(--mep-blue);"></h2>
+                        <button class="btn btn-secondary" onclick="nextMonth()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                     
-                    <div style="padding: 20px;">
-                        <div class="form-group">
-                            <label class="form-label">Plantilla de Correo</label>
-                            <select id="email-template" class="form-control" onchange="loadEmailTemplate()">
-                                <option value="">Seleccionar plantilla</option>
-                                <option value="informe_diario">📋 Informe Diario de Actividades</option>
-                                <option value="informe_semanal">📅 Informe Semanal de Avances</option>
-                                <option value="solicitud_reunion">👥 Solicitud de Reunión</option>
-                                <option value="envio_documentos">📎 Envío de Documentos</option>
-                                <option value="reporte_pnft">📊 Reporte PNFT</option>
-                                <option value="teletrabajo">🏠 Reporte Teletrabajo</option>
-                            </select>
+                    <div class="calendar-grid" id="calendar-days">
+                        <!-- Días generados dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORTES -->
+            <div id="tab-reportes" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-contract"></i> Sistema de Reportes Profesionales</h2>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Reporte</label>
+                        <select id="report-type" class="form-control" onchange="loadReportTemplate()">
+                            <option value="">Seleccionar tipo</option>
+                            <option value="diario">📋 Informe Diario de Actividades</option>
+                            <option value="semanal">📅 Informe Semanal de Avances</option>
+                            <option value="funciones">👥 Reporte de Funciones del Equipo</option>
+                            <option value="archivos">📁 Reporte de Archivos por Mes</option>
+                            <option value="productividad">📊 Reporte de Productividad</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Período</label>
+                        <div class="d-flex gap-3">
+                            <input type="date" id="report-start" class="form-control">
+                            <span style="align-self: center;">a</span>
+                            <input type="date" id="report-end" class="form-control">
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Destinatario</label>
-                            <select id="email-recipient" class="form-control">
-                                <option value="supervisor">Supervisor Inmediato</option>
-                                <option value="equipo">Equipo DRTE</option>
-                                <option value="coordinacion">Coordinación PNFT</option>
-                                <option value="personal">Correo Personal</option>
-                                <option value="custom">Personalizado...</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Asunto</label>
-                            <input type="text" id="email-subject" class="form-control" placeholder="Asunto del correo">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Contenido del Correo</label>
-                            <div id="email-editor" style="min-height: 300px; background: white; color: black; border-radius: var(--border-radius);"></div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Adjuntar desde Bitácora</label>
-                            <div id="email-attachments">
-                                <!-- Archivos para adjuntar -->
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 15px; margin-top: 30px;">
-                            <button class="btn btn-email btn-block" onclick="sendViaOutlook()">
-                                <i class="fas fa-paper-plane"></i> Abrir en Outlook MEP
-                            </button>
-                            <button class="btn btn-primary btn-block" onclick="saveEmailDraft()">
-                                <i class="fas fa-save"></i> Guardar Borrador
-                            </button>
-                            <button class="btn btn-print btn-block" onclick="printEmail()">
-                                <i class="fas fa-print"></i> Imprimir Correo
-                            </button>
-                        </div>
+                    </div>
+                    
+                    <div id="report-preview" style="
+                        background: #f8f9fa;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 20px;
+                        min-height: 300px;
+                        margin-bottom: 20px;
+                    ">
+                        <!-- Vista previa del reporte -->
+                    </div>
+                    
+                    <div class="d-flex gap-3 flex-wrap">
+                        <button class="btn btn-primary" onclick="generatePDF()">
+                            <i class="fas fa-file-pdf"></i> Generar PDF
+                        </button>
+                        <button class="btn btn-success" onclick="generateExcel()">
+                            <i class="fas fa-file-excel"></i> Generar Excel
+                        </button>
+                        <button class="btn btn-warning" onclick="generateWord()">
+                            <i class="fas fa-file-word"></i> Generar Word
+                        </button>
+                        <button class="btn btn-secondary" onclick="sendReportEmail()">
+                            <i class="fas fa-paper-plane"></i> Enviar por Email
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL PARA NUEVAS TAREAS -->
+    <div id="task-modal" style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    ">
+        <div style="
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="color: var(--mep-blue);">
+                    <i class="fas fa-tasks"></i> Nueva Tarea/Función
+                </h3>
+                <button onclick="closeTaskModal()" style="
+                    background: none;
+                    border: none;
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                    color: #666;
+                ">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Función del Equipo</label>
+                <select id="task-function" class="form-control">
+                    <option value="">Seleccionar función</option>
+                    <option value="1">1. Establecer orientaciones curriculares</option>
+                    <option value="2">2. Establecer orientaciones para evaluación</option>
+                    <option value="3">3. Promover recursos didácticos digitales</option>
+                    <option value="4">4. Revisar y adaptar propuesta curricular</option>
+                    <option value="5">5. Promover condiciones administrativas</option>
+                    <option value="6">6. Colaborar con Gestión Estratégica Digital</option>
+                    <option value="7">7. Coordinar con Equipo de Inclusión</option>
+                    <option value="8">8. Coordinar formación continua docentes</option>
+                    <option value="9">9. Coordinar distribución de lecciones</option>
+                    <option value="10">10. Participar en iniciativas PATDE</option>
+                    <option value="11">11. Colaborar en eventos masivos</option>
+                    <option value="12">12. Brindar orientaciones equipos Programa 3</option>
+                    <option value="13">13. Ejecutar otras tareas asignadas</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Título de la Tarea</label>
+                <input type="text" id="task-title" class="form-control" placeholder="Ej: Revisar documento curricular">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <textarea id="task-description" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <div class="d-flex gap-3">
+                    <div style="flex: 1;">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" id="task-date" class="form-control">
+                    </div>
+                    <div style="flex: 1;">
+                        <label class="form-label">Prioridad</label>
+                        <select id="task-priority" class="form-control">
+                            <option value="normal">Normal</option>
+                            <option value="alta">Alta</option>
+                            <option value="urgente">Urgente</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Estado</label>
+                <select id="task-status" class="form-control">
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en-progreso">En Progreso</option>
+                    <option value="completada">Completada</option>
+                </select>
+            </div>
+            
+            <div class="d-flex gap-3 mt-3">
+                <button class="btn btn-primary w-100" onclick="saveTask()">
+                    <i class="fas fa-save"></i> Guardar Tarea
+                </button>
+                <button class="btn btn-secondary w-100" onclick="closeTaskModal()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================
-        // SISTEMA AGENDA DRTE DEFINITIVO
+        // SISTEMA AGENDA DRTE - TODAS LAS FASES
         // ============================================
         
-        class AgendaDRTEProfessional {
+        class AgendaDRTE {
             constructor() {
-                this.version = '5.0.0';
+                this.db = null;
                 this.currentDate = new Date();
-                this.journalDate = new Date();
-                this.fileSystem = new FileSystemManager();
                 this.init();
             }
             
             async init() {
-                // Inicializar sistema
+                // Inicializar base de datos
+                await this.initDatabase();
+                
+                // Configurar fecha actual
                 this.updateDateTime();
-                setInterval(() => this.updateDateTime(), 1000);
+                setInterval(() => this.updateDateTime(), 60000);
                 
-                // Cargar datos
-                await this.loadData();
+                // Configurar fecha de hoy en formularios
+                const today = this.formatDateInput(new Date());
+                document.getElementById('journal-date').value = today;
+                document.getElementById('file-date').value = today;
+                document.getElementById('task-date').value = today;
                 
-                // Configurar fecha inicial
-                document.getElementById('journal-date').value = this.formatDateForInput(this.journalDate);
-                this.updateDateNavigation();
+                // Configurar calendario
+                this.generateCalendar();
                 
-                // Inicializar editor de correo
-                this.initEmailEditor();
+                // Cargar datos iniciales
+                this.loadDashboardStats();
+                this.loadTasks();
                 
-                console.log('✅ Sistema Agenda DRTE Professional inicializado');
+                // Configurar eventos
+                this.setupEventListeners();
+                
+                console.log('✅ Sistema DRTE inicializado');
             }
             
             // ============================================
-            // BITÁCORA DIARIA COMPLETA
+            // BASE DE DATOS INDEXEDDB
+            // ============================================
+            
+            async initDatabase() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('AgendaDRTE_System', 3);
+                    
+                    request.onerror = () => reject('Error al abrir IndexedDB');
+                    
+                    request.onsuccess = (event) => {
+                        this.db = event.target.result;
+                        console.log('📁 Base de datos lista');
+                        resolve();
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        
+                        // Bitácoras diarias
+                        if (!db.objectStoreNames.contains('journals')) {
+                            const store = db.createObjectStore('journals', { keyPath: 'id' });
+                            store.createIndex('date', 'date', { unique: true });
+                        }
+                        
+                        // Tareas/Funciones
+                        if (!db.objectStoreNames.contains('tasks')) {
+                            const store = db.createObjectStore('tasks', { keyPath: 'id' });
+                            store.createIndex('date', 'date', { unique: false });
+                            store.createIndex('status', 'status', { unique: false });
+                        }
+                        
+                        // Archivos por fecha
+                        if (!db.objectStoreNames.contains('files')) {
+                            const store = db.createObjectStore('files', { keyPath: 'id' });
+                            store.createIndex('date', 'date', { unique: false });
+                        }
+                    };
+                });
+            }
+            
+            // ============================================
+            // BITÁCORA DIARIA (COMPLETAMENTE FUNCIONAL)
             // ============================================
             
             async saveJournal() {
                 try {
                     const date = document.getElementById('journal-date').value;
                     const title = document.getElementById('journal-title').value;
-                    const category = document.getElementById('journal-category').value;
-                    const time = document.getElementById('journal-time').value;
-                    const summary = document.getElementById('journal-summary').value;
                     const content = document.getElementById('journal-content').innerHTML;
+                    const summary = document.getElementById('journal-summary').value;
                     
                     if (!date) {
-                        throw new Error('Por favor seleccione una fecha');
+                        this.showAlert('Por favor seleccione una fecha', 'warning');
+                        return;
                     }
                     
                     const journalEntry = {
-                        id: `journal_${date.replace(/-/g, '')}`,
+                        id: `journal_${date}`,
                         date: date,
                         title: title || 'Bitácora del día',
-                        category: category,
-                        time: time || new Date().toLocaleTimeString('es-CR', {hour: '2-digit', minute:'2-digit'}),
                         content: content,
-                        summary: summary,
+                        summary: summary || '',
                         createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                        attachments: this.getCurrentAttachments()
+                        updatedAt: new Date().toISOString()
                     };
                     
                     // Guardar en IndexedDB
-                    await this.fileSystem.saveJournalEntry(journalEntry);
+                    const transaction = this.db.transaction(['journals'], 'readwrite');
+                    const store = transaction.objectStore('journals');
+                    await store.put(journalEntry);
                     
-                    // Actualizar interfaz
-                    this.showNotification('Bitácora guardada', 'La entrada ha sido guardada exitosamente', 'success');
+                    this.showAlert('Bitácora guardada exitosamente', 'success');
                     
-                    // Generar backup automático
-                    this.backupJournalEntry(journalEntry);
+                    // También guardar en localStorage como backup
+                    this.backupToLocalStorage('journals', journalEntry);
                     
                 } catch (error) {
-                    this.showNotification('Error', error.message, 'error');
+                    console.error('Error guardando bitácora:', error);
+                    this.showAlert('Error al guardar la bitácora', 'error');
                 }
             }
             
             async loadJournal() {
                 try {
                     const date = document.getElementById('journal-date').value;
-                    const entry = await this.fileSystem.getJournalEntry(date);
+                    const transaction = this.db.transaction(['journals'], 'readonly');
+                    const store = transaction.objectStore('journals');
+                    const index = store.index('date');
+                    const request = index.get(date);
                     
-                    if (entry) {
-                        document.getElementById('journal-title').value = entry.title || '';
-                        document.getElementById('journal-category').value = entry.category || 'general';
-                        document.getElementById('journal-time').value = entry.time || '';
-                        document.getElementById('journal-summary').value = entry.summary || '';
-                        document.getElementById('journal-content').innerHTML = entry.content || '<p>Comienza tu bitácora aquí...</p>';
-                        
-                        this.loadJournalAttachments(entry.attachments || []);
-                        
-                        this.showNotification('Bitácora cargada', 'Entrada recuperada exitosamente', 'success');
-                    } else {
-                        document.getElementById('journal-content').innerHTML = `
-                            <h3>📝 Bitácora para ${this.formatDate(new Date(date))}</h3>
-                            <p>No hay una entrada para esta fecha. Puedes comenzar una nueva.</p>
-                            <hr>
-                            <div class="journal-section">
-                                <h4>🎯 Objetivos del Día:</h4>
+                    request.onsuccess = () => {
+                        const entry = request.result;
+                        if (entry) {
+                            document.getElementById('journal-title').value = entry.title || '';
+                            document.getElementById('journal-content').innerHTML = entry.content || '';
+                            document.getElementById('journal-summary').value = entry.summary || '';
+                            this.showAlert('Bitácora cargada', 'success');
+                        } else {
+                            document.getElementById('journal-content').innerHTML = `
+                                <h3>📋 Bitácora para ${this.formatDateDisplay(new Date(date))}</h3>
+                                <p>No hay una entrada para esta fecha. Puedes comenzar una nueva.</p>
+                                <hr>
+                                <h4>🎯 Actividades sugeridas:</h4>
                                 <ul>
-                                    <li>Actividad 1</li>
-                                    <li>Actividad 2</li>
-                                    <li>Actividad 3</li>
+                                    <li>Revisión de documentos curriculares</li>
+                                    <li>Coordinación con equipo DRTE</li>
+                                    <li>Capacitación a docentes</li>
+                                    <li>Elaboración de informes</li>
                                 </ul>
-                            </div>
-                            <div class="journal-section">
-                                <h4>📋 Actividades Realizadas:</h4>
-                                <ul>
-                                    <li>[Descripción de actividad]</li>
-                                </ul>
-                            </div>
-                            <div class="journal-section">
-                                <h4>📊 Resultados Obtenidos:</h4>
-                                <ul>
-                                    <li>[Resultado 1]</li>
-                                </ul>
-                            </div>
-                            <div class="journal-section">
-                                <h4>🚀 Próximos Pasos:</h4>
-                                <ul>
-                                    <li>[Acción futura 1]</li>
-                                </ul>
-                            </div>
-                        `;
-                    }
+                            `;
+                        }
+                    };
                     
                 } catch (error) {
                     console.error('Error cargando bitácora:', error);
-                    this.showNotification('Error', 'No se pudo cargar la bitácora', 'error');
                 }
             }
             
             loadTodayJournal() {
-                const today = new Date();
-                document.getElementById('journal-date').value = this.formatDateForInput(today);
+                const today = this.formatDateInput(new Date());
+                document.getElementById('journal-date').value = today;
                 this.loadJournal();
             }
             
-            insertTemplate(templateType) {
-                const contentDiv = document.getElementById('journal-content');
+            insertJournalTemplate(type) {
                 let template = '';
                 
-                switch(templateType) {
-                    case 'actividad':
+                switch(type) {
+                    case 'reunion':
                         template = `
-                            <div class="activity-entry" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <h4 style="margin: 0;">Nueva Actividad</h4>
-                                    <span style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">${new Date().toLocaleTimeString('es-CR', {hour: '2-digit', minute:'2-digit'})}</span>
-                                </div>
-                                <p><strong>Descripción:</strong> [Describa la actividad realizada]</p>
-                                <p><strong>Objetivo:</strong> [Objetivo de la actividad]</p>
-                                <p><strong>Resultados:</strong> [Resultados obtenidos]</p>
-                                <p><strong>Evidencias:</strong> [Adjunte evidencias si aplica]</p>
-                                <p><strong>Tiempo dedicado:</strong> [Horas] horas</p>
+                            <div class="activity-block">
+                                <h4>👥 Reunión/Coordinación</h4>
+                                <p><strong>Participantes:</strong> </p>
+                                <p><strong>Tema:</strong> </p>
+                                <p><strong>Acuerdos:</strong></p>
+                                <ul>
+                                    <li>Acuerdo 1</li>
+                                    <li>Acuerdo 2</li>
+                                </ul>
+                                <p><strong>Acciones:</strong></p>
+                                <ul>
+                                    <li>Acción 1</li>
+                                </ul>
                             </div>
                         `;
                         break;
                         
-                    case 'reunion':
+                    case 'capacitacion':
                         template = `
-                            <div class="meeting-entry" style="margin-bottom: 20px; padding: 15px; background: rgba(9,132,227,0.1); border-radius: 8px;">
-                                <h4>👥 Reunión/Coordinación</h4>
-                                <p><strong>Participantes:</strong> [Nombres de participantes]</p>
-                                <p><strong>Tema:</strong> [Tema principal]</p>
-                                <p><strong>Acuerdos:</strong> [Lista de acuerdos]</p>
-                                <p><strong>Acciones pendientes:</strong> [Acciones a seguir]</p>
-                                <p><strong>Próxima reunión:</strong> [Fecha si aplica]</p>
+                            <div class="activity-block">
+                                <h4>🎓 Capacitación/Taller</h4>
+                                <p><strong>Tema:</strong> </p>
+                                <p><strong>Participantes:</strong> </p>
+                                <p><strong>Contenido:</strong></p>
+                                <ul>
+                                    <li>Punto 1</li>
+                                    <li>Punto 2</li>
+                                </ul>
+                                <p><strong>Evaluación:</strong> </p>
                             </div>
                         `;
                         break;
                 }
                 
-                contentDiv.innerHTML += template;
+                const editor = document.getElementById('journal-content');
+                editor.innerHTML += template;
+            }
+            
+            // ============================================
+            // SISTEMA DE TAREAS (13 FUNCIONES)
+            // ============================================
+            
+            async saveTask() {
+                try {
+                    const functionNum = document.getElementById('task-function').value;
+                    const title = document.getElementById('task-title').value;
+                    const description = document.getElementById('task-description').value;
+                    const date = document.getElementById('task-date').value;
+                    const priority = document.getElementById('task-priority').value;
+                    const status = document.getElementById('task-status').value;
+                    
+                    if (!functionNum || !title) {
+                        this.showAlert('Complete los campos requeridos', 'warning');
+                        return;
+                    }
+                    
+                    const task = {
+                        id: Date.now().toString(),
+                        function: functionNum,
+                        title: title,
+                        description: description,
+                        date: date,
+                        priority: priority,
+                        status: status,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    // Guardar en IndexedDB
+                    const transaction = this.db.transaction(['tasks'], 'readwrite');
+                    const store = transaction.objectStore('tasks');
+                    await store.put(task);
+                    
+                    this.closeTaskModal();
+                    this.loadTasks();
+                    this.loadDashboardStats();
+                    
+                    this.showAlert('Tarea guardada exitosamente', 'success');
+                    
+                } catch (error) {
+                    console.error('Error guardando tarea:', error);
+                    this.showAlert('Error al guardar la tarea', 'error');
+                }
+            }
+            
+            async loadTasks(filter = 'all') {
+                try {
+                    const transaction = this.db.transaction(['tasks'], 'readonly');
+                    const store = transaction.objectStore('tasks');
+                    const tasks = await store.getAll();
+                    
+                    let filteredTasks = tasks;
+                    if (filter === 'pending') {
+                        filteredTasks = tasks.filter(t => t.status !== 'completada');
+                    } else if (filter === 'completed') {
+                        filteredTasks = tasks.filter(t => t.status === 'completada');
+                    } else if (filter === 'urgent') {
+                        filteredTasks = tasks.filter(t => t.priority === 'urgente');
+                    }
+                    
+                    this.displayTasks(filteredTasks);
+                    
+                } catch (error) {
+                    console.error('Error cargando tareas:', error);
+                }
+            }
+            
+            displayTasks(tasks) {
+                const container = document.getElementById('tasks-container');
+                
+                if (tasks.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center" style="padding: 40px; color: #666;">
+                            <i class="fas fa-tasks fa-3x" style="margin-bottom: 15px;"></i>
+                            <h4>No hay tareas registradas</h4>
+                            <p>Comienza agregando tus primeras tareas</p>
+                            <button class="btn btn-primary mt-3" onclick="openTaskModal()">
+                                <i class="fas fa-plus"></i> Agregar Primera Tarea
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = tasks.map(task => `
+                    <div class="task-item" style="
+                        background: ${task.status === 'completada' ? '#e8f5e9' : 
+                                    task.priority === 'urgente' ? '#ffebee' : 
+                                    task.priority === 'alta' ? '#fff3e0' : '#f8f9fa'};
+                        border-left: 4px solid ${task.status === 'completada' ? '#4caf50' : 
+                                              task.priority === 'urgente' ? '#f44336' : 
+                                              task.priority === 'alta' ? '#ff9800' : '#2196f3'};
+                        border-radius: 8px;
+                        padding: 20px;
+                        margin-bottom: 15px;
+                    ">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <span style="
+                                        background: #2196f3;
+                                        color: white;
+                                        width: 24px;
+                                        height: 24px;
+                                        border-radius: 50%;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 0.8rem;
+                                    ">${task.function}</span>
+                                    <strong style="color: #333;">${task.title}</strong>
+                                    <span style="
+                                        padding: 3px 10px;
+                                        border-radius: 12px;
+                                        font-size: 0.75rem;
+                                        background: ${task.priority === 'urgente' ? '#f44336' : 
+                                                   task.priority === 'alta' ? '#ff9800' : '#4caf50'};
+                                        color: white;
+                                    ">${task.priority}</span>
+                                </div>
+                                <p style="color: #666; margin-bottom: 10px;">${task.description || ''}</p>
+                                <div style="display: flex; gap: 15px; font-size: 0.85rem; color: #888;">
+                                    <span><i class="fas fa-calendar"></i> ${task.date}</span>
+                                    <span><i class="fas fa-flag"></i> ${task.status}</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 5px;">
+                                <button onclick="toggleTaskStatus('${task.id}')" style="
+                                    background: none;
+                                    border: none;
+                                    color: #4caf50;
+                                    cursor: pointer;
+                                    font-size: 1.2rem;
+                                " title="${task.status === 'completada' ? 'Marcar pendiente' : 'Marcar completada'}">
+                                    <i class="fas ${task.status === 'completada' ? 'fa-undo' : 'fa-check'}"></i>
+                                </button>
+                                <button onclick="deleteTask('${task.id}')" style="
+                                    background: none;
+                                    border: none;
+                                    color: #f44336;
+                                    cursor: pointer;
+                                    font-size: 1.2rem;
+                                " title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            async toggleTaskStatus(taskId) {
+                try {
+                    const transaction = this.db.transaction(['tasks'], 'readwrite');
+                    const store = transaction.objectStore('tasks');
+                    const task = await store.get(taskId);
+                    
+                    if (task) {
+                        task.status = task.status === 'completada' ? 'pendiente' : 'completada';
+                        task.updatedAt = new Date().toISOString();
+                        await store.put(task);
+                        
+                        this.loadTasks();
+                        this.loadDashboardStats();
+                    }
+                } catch (error) {
+                    console.error('Error actualizando tarea:', error);
+                }
+            }
+            
+            async deleteTask(taskId) {
+                if (!confirm('¿Está seguro de eliminar esta tarea?')) return;
+                
+                try {
+                    const transaction = this.db.transaction(['tasks'], 'readwrite');
+                    const store = transaction.objectStore('tasks');
+                    await store.delete(taskId);
+                    
+                    this.loadTasks();
+                    this.loadDashboardStats();
+                    
+                    this.showAlert('Tarea eliminada', 'success');
+                } catch (error) {
+                    console.error('Error eliminando tarea:', error);
+                }
             }
             
             // ============================================
@@ -782,321 +1265,331 @@
             
             async uploadFiles(files) {
                 try {
-                    const date = document.getElementById('file-date-selector').value || this.formatDateForInput(this.currentDate);
+                    const date = document.getElementById('file-date').value || this.formatDateInput(new Date());
                     
                     for (const file of files) {
-                        // Crear estructura de fecha
-                        const dateParts = date.split('-');
-                        const year = dateParts[0];
-                        const month = dateParts[1];
-                        const day = dateParts[2];
-                        
-                        // Guardar archivo con metadatos de fecha
-                        await this.fileSystem.saveFile(file, {
-                            year: year,
-                            month: month,
-                            day: day,
+                        const fileData = {
+                            id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
                             date: date,
-                            category: 'general'
-                        });
+                            uploadedAt: new Date().toISOString(),
+                            data: await this.readFileAsArrayBuffer(file)
+                        };
+                        
+                        // Guardar en IndexedDB
+                        const transaction = this.db.transaction(['files'], 'readwrite');
+                        const store = transaction.objectStore('files');
+                        await store.put(fileData);
+                        
+                        // Mostrar inmediatamente en la interfaz
+                        this.addFilePreview(fileData);
                     }
                     
-                    // Actualizar interfaz
-                    this.updateFileStructure();
-                    this.updateFileStats();
-                    
-                    this.showNotification('Archivos subidos', `${files.length} archivo(s) guardados exitosamente`, 'success');
+                    this.showAlert(`${files.length} archivo(s) subido(s) exitosamente`, 'success');
+                    this.loadDashboardStats();
                     
                 } catch (error) {
-                    this.showNotification('Error', error.message, 'error');
+                    console.error('Error subiendo archivos:', error);
+                    this.showAlert('Error al subir archivos', 'error');
                 }
             }
             
-            async updateFileStructure() {
+            async loadFilesForDate() {
                 try {
-                    const files = await this.fileSystem.getAllFiles();
-                    const structure = {};
+                    const date = document.getElementById('file-date').value;
+                    const transaction = this.db.transaction(['files'], 'readonly');
+                    const store = transaction.objectStore('files');
+                    const index = store.index('date');
+                    const files = await index.getAll(date);
                     
-                    // Organizar archivos por año/mes/día
-                    files.forEach(file => {
-                        if (!file.metadata) return;
-                        
-                        const { year, month, day } = file.metadata;
-                        
-                        if (!structure[year]) structure[year] = {};
-                        if (!structure[year][month]) structure[year][month] = {};
-                        if (!structure[year][month][day]) structure[year][month][day] = [];
-                        
-                        structure[year][month][day].push(file);
-                    });
-                    
-                    // Renderizar estructura
-                    const container = document.getElementById('file-structure');
-                    container.innerHTML = '';
-                    
-                    Object.keys(structure).sort((a, b) => b - a).forEach(year => {
-                        const yearDiv = this.createFolderElement('year', year, structure[year]);
-                        container.appendChild(yearDiv);
-                    });
+                    this.displayFiles(files);
                     
                 } catch (error) {
-                    console.error('Error actualizando estructura:', error);
+                    console.error('Error cargando archivos:', error);
                 }
             }
             
-            createFolderElement(type, name, content) {
-                const div = document.createElement('div');
-                div.className = 'folder';
+            displayFiles(files) {
+                const container = document.getElementById('files-container');
                 
-                let icon = '📁';
-                let title = name;
-                
-                switch(type) {
-                    case 'year':
-                        icon = '📅';
-                        title = `Año ${name}`;
-                        break;
-                    case 'month':
-                        icon = '📆';
-                        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                        title = `${monthNames[parseInt(name) - 1]}`;
-                        break;
-                    case 'day':
-                        icon = '📝';
-                        title = `Día ${name}`;
-                        break;
+                if (files.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center" style="grid-column: 1 / -1; padding: 40px; color: #666;">
+                            <i class="fas fa-folder-open fa-3x" style="margin-bottom: 15px;"></i>
+                            <h4>No hay archivos para esta fecha</h4>
+                            <p>Sube archivos usando el área de arriba</p>
+                        </div>
+                    `;
+                    return;
                 }
                 
-                div.innerHTML = `
-                    <div class="folder-header" onclick="this.parentElement.querySelector('.folder-content').classList.toggle('expanded')">
-                        <span style="font-size: 1.2rem;">${icon}</span>
-                        <span style="flex: 1;">${title}</span>
-                        <span class="file-count">${this.countFiles(content)} archivos</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="folder-content">
-                        ${this.renderFolderContent(type, content)}
-                    </div>
-                `;
-                
-                return div;
-            }
-            
-            countFiles(content) {
-                if (Array.isArray(content)) {
-                    return content.length;
-                } else if (typeof content === 'object') {
-                    let total = 0;
-                    Object.values(content).forEach(subContent => {
-                        total += this.countFiles(subContent);
-                    });
-                    return total;
-                }
-                return 0;
-            }
-            
-            renderFolderContent(type, content) {
-                if (Array.isArray(content)) {
-                    return content.map(file => `
-                        <div class="file-item" data-file-id="${file.id}">
-                            <i class="fas ${this.getFileIcon(file.type)}"></i>
-                            <span style="flex: 1;">${file.name}</span>
-                            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">
+                container.innerHTML = files.map(file => `
+                    <div class="file-card">
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <i class="${this.getFileIcon(file.type)} fa-3x" 
+                               style="color: ${this.getFileColor(file.type)};"></i>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong style="display: block; margin-bottom: 5px; word-break: break-word;">
+                                ${file.name}
+                            </strong>
+                            <div style="font-size: 0.8rem; color: #666;">
                                 ${this.formatFileSize(file.size)}
-                            </span>
-                            <button class="toolbar-btn" onclick="downloadFile('${file.id}')" title="Descargar">
+                            </div>
+                            <div style="font-size: 0.75rem; color: #999; margin-top: 5px;">
+                                ${new Date(file.uploadedAt).toLocaleTimeString('es-CR', {hour: '2-digit', minute:'2-digit'})}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" style="flex: 1; padding: 8px;" 
+                                    onclick="downloadFile('${file.id}')">
                                 <i class="fas fa-download"></i>
                             </button>
-                            <button class="toolbar-btn" onclick="previewFile('${file.id}')" title="Vista previa">
+                            <button class="btn btn-secondary" style="flex: 1; padding: 8px;"
+                                    onclick="previewFile('${file.id}')">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="toolbar-btn" onclick="deleteFile('${file.id}')" title="Eliminar">
-                                <i class="fas fa-trash"></i>
-                            </button>
                         </div>
-                    `).join('');
-                } else {
-                    let html = '';
-                    Object.keys(content).sort((a, b) => {
-                        if (type === 'year') return b - a;
-                        if (type === 'month') return b - a;
-                        if (type === 'day') return b - a;
-                        return 0;
-                    }).forEach(key => {
-                        const subType = type === 'year' ? 'month' : type === 'month' ? 'day' : 'file';
-                        html += this.createFolderElement(subType, key, content[key]).outerHTML;
-                    });
-                    return html;
+                    </div>
+                `).join('');
+            }
+            
+            addFilePreview(fileData) {
+                const container = document.getElementById('files-container');
+                const preview = document.createElement('div');
+                preview.className = 'file-card';
+                preview.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <i class="${this.getFileIcon(fileData.type)} fa-3x" 
+                           style="color: ${this.getFileColor(fileData.type)};"></i>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="display: block; margin-bottom: 5px; word-break: break-word;">
+                            ${fileData.name}
+                        </strong>
+                        <div style="font-size: 0.8rem; color: #666;">
+                            ${this.formatFileSize(fileData.size)}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" style="flex: 1; padding: 8px;" 
+                                onclick="downloadFile('${fileData.id}')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                `;
+                container.prepend(preview);
+            }
+            
+            async downloadFile(fileId) {
+                try {
+                    const transaction = this.db.transaction(['files'], 'readonly');
+                    const store = transaction.objectStore('files');
+                    const file = await store.get(fileId);
+                    
+                    if (file) {
+                        const blob = new Blob([file.data], { type: file.type });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = file.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }
+                } catch (error) {
+                    console.error('Error descargando archivo:', error);
                 }
             }
             
-            async updateFileStats() {
-                try {
-                    const files = await this.fileSystem.getAllFiles();
-                    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+            // ============================================
+            // CALENDARIO (CORREGIDO ZONA HORARIA CR)
+            // ============================================
+            
+            generateCalendar() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth();
+                
+                // Configurar zona horaria Costa Rica
+                const options = { timeZone: 'America/Costa_Rica', month: 'long', year: 'numeric' };
+                const monthName = now.toLocaleDateString('es-CR', options);
+                document.getElementById('calendar-month').textContent = monthName;
+                
+                // Generar días del mes
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startDay = firstDay.getDay();
+                
+                const container = document.getElementById('calendar-days');
+                container.innerHTML = '';
+                
+                // Días de la semana
+                ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].forEach(day => {
+                    const dayEl = document.createElement('div');
+                    dayEl.textContent = day;
+                    dayEl.style.fontWeight = '600';
+                    dayEl.style.color = '#666';
+                    container.appendChild(dayEl);
+                });
+                
+                // Espacios vacíos al inicio
+                for (let i = 0; i < startDay; i++) {
+                    const empty = document.createElement('div');
+                    container.appendChild(empty);
+                }
+                
+                // Días del mes
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'calendar-day';
+                    dayEl.textContent = day;
                     
-                    // Contar días únicos con archivos
-                    const uniqueDates = new Set();
-                    files.forEach(file => {
-                        if (file.metadata && file.metadata.date) {
-                            uniqueDates.add(file.metadata.date);
-                        }
+                    // Marcar día actual
+                    const currentDate = new Date();
+                    if (day === currentDate.getDate() && 
+                        month === currentDate.getMonth() && 
+                        year === currentDate.getFullYear()) {
+                        dayEl.classList.add('today');
+                    }
+                    
+                    // Marcar días con archivos (podrías cargar esto dinámicamente)
+                    dayEl.addEventListener('click', () => {
+                        this.selectCalendarDate(year, month + 1, day);
                     });
                     
-                    document.getElementById('total-files-count').textContent = files.length;
-                    document.getElementById('days-with-files').textContent = uniqueDates.size;
-                    document.getElementById('storage-used').textContent = this.formatFileSize(totalSize);
+                    container.appendChild(dayEl);
+                }
+            }
+            
+            selectCalendarDate(year, month, day) {
+                const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                document.getElementById('file-date').value = dateStr;
+                document.getElementById('journal-date').value = dateStr;
+                switchTab('archivos');
+                this.loadFilesForDate();
+            }
+            
+            prevMonth() {
+                this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                this.generateCalendar();
+            }
+            
+            nextMonth() {
+                this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                this.generateCalendar();
+            }
+            
+            // ============================================
+            // REPORTES PROFESIONALES
+            // ============================================
+            
+            async generateDailyReport() {
+                try {
+                    const today = this.formatDateInput(new Date());
+                    
+                    // Obtener datos del día
+                    const [tasks, files, journal] = await Promise.all([
+                        this.getTasksByDate(today),
+                        this.getFilesByDate(today),
+                        this.getJournalByDate(today)
+                    ]);
+                    
+                    // Generar contenido del reporte
+                    const reportContent = this.createReportContent(today, tasks, files, journal);
+                    
+                    // Generar PDF
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    // Título
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('INFORME DIARIO DE ACTIVIDADES - DRTE MEP', 105, 20, { align: 'center' });
+                    
+                    // Información
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Fecha: ${this.formatDateDisplay(new Date(today))}`, 20, 35);
+                    doc.text(`Asesor: Kevin Sánchez Bogarín`, 20, 42);
+                    doc.text(`Departamento: Investigación, Desarrollo e Implementación`, 20, 49);
+                    
+                    // Contenido
+                    doc.setFontSize(11);
+                    const lines = doc.splitTextToSize(reportContent, 170);
+                    doc.text(lines, 20, 65);
+                    
+                    // Guardar PDF
+                    doc.save(`Informe_DRTE_${today}.pdf`);
+                    
+                    this.showAlert('Reporte PDF generado exitosamente', 'success');
                     
                 } catch (error) {
-                    console.error('Error actualizando estadísticas:', error);
+                    console.error('Error generando reporte:', error);
+                    this.showAlert('Error al generar el reporte', 'error');
                 }
             }
             
-            // ============================================
-            // SISTEMA DE CORREO MEP
-            // ============================================
-            
-            initEmailEditor() {
-                // Editor simple para correos
-                const editor = document.getElementById('email-editor');
-                editor.contentEditable = true;
-                editor.style.padding = '20px';
-                editor.innerHTML = `
-                    <p><strong>Estimado(a) Supervisor(a):</strong></p>
-                    <p>Por este medio le presento mi informe de actividades correspondiente al día de hoy.</p>
-                    <p><strong>Actividades realizadas:</strong></p>
-                    <ul>
-                        <li>[Describa actividad 1]</li>
-                        <li>[Describa actividad 2]</li>
-                    </ul>
-                    <p><strong>Resultados obtenidos:</strong></p>
-                    <ul>
-                        <li>[Resultado 1]</li>
-                    </ul>
-                    <p><strong>Observaciones:</strong></p>
-                    <p>[Observaciones importantes]</p>
-                    <p>Quedo atento(a) a sus comentarios.</p>
-                    <p><strong>Atentamente,</strong><br>
-                    Kevin Sánchez Bogarín<br>
-                    Asesor Nacional<br>
-                    Departamento de Investigación, Desarrollo e Implementación<br>
-                    MEP - Costa Rica</p>
-                `;
-            }
-            
-            loadEmailTemplate() {
-                const template = document.getElementById('email-template').value;
-                const editor = document.getElementById('email-editor');
+            createReportContent(date, tasks, files, journal) {
+                let content = `INFORME DIARIO - ${this.formatDateDisplay(new Date(date))}\n\n`;
                 
-                let content = '';
-                let subject = '';
+                content += `RESUMEN DE ACTIVIDADES:\n`;
+                content += `───────────────────────\n`;
                 
-                switch(template) {
-                    case 'informe_diario':
-                        subject = 'Informe Diario de Actividades - ' + this.formatDate(new Date());
-                        content = this.generateDailyReport();
-                        break;
-                        
-                    case 'informe_semanal':
-                        subject = 'Informe Semanal de Avances - Semana ' + this.getWeekNumber();
-                        content = this.generateWeeklyReport();
-                        break;
-                        
-                    case 'solicitud_reunion':
-                        subject = 'Solicitud de Reunión - Tema por definir';
-                        content = this.generateMeetingRequest();
-                        break;
+                if (journal) {
+                    content += `${journal.summary || 'Sin resumen disponible'}\n\n`;
                 }
                 
-                if (content) {
-                    editor.innerHTML = content;
-                    document.getElementById('email-subject').value = subject;
-                }
-            }
-            
-            generateDailyReport() {
-                const date = new Date();
-                return `
-                    <p><strong>INFORME DIARIO DE ACTIVIDADES</strong></p>
-                    <p><strong>Fecha:</strong> ${this.formatDate(date)}</p>
-                    <p><strong>Asesor:</strong> Kevin Sánchez Bogarín</p>
-                    <p><strong>Departamento:</strong> Investigación, Desarrollo e Implementación</p>
-                    <hr>
-                    <p><strong>1. ACTIVIDADES PRINCIPALES REALIZADAS:</strong></p>
-                    <ul>
-                        <li>[Actividad PNFT 1]</li>
-                        <li>[Actividad PNFT 2]</li>
-                        <li>[Coordinaciones realizadas]</li>
-                        <li>[Revisión de documentos]</li>
-                    </ul>
-                    <p><strong>2. RESULTADOS OBTENIDOS:</strong></p>
-                    <ul>
-                        <li>[Resultado 1]</li>
-                        <li>[Resultado 2]</li>
-                    </ul>
-                    <p><strong>3. DIFICULTADES ENCONTRADAS:</strong></p>
-                    <ul>
-                        <li>[Dificultad 1]</li>
-                        <li>[Dificultad 2]</li>
-                    </ul>
-                    <p><strong>4. ACCIONES PLANIFICADAS PARA MAÑANA:</strong></p>
-                    <ul>
-                        <li>[Acción 1]</li>
-                        <li>[Acción 2]</li>
-                    </ul>
-                    <hr>
-                    <p><strong>Observaciones:</strong></p>
-                    <p>[Observaciones importantes del día]</p>
-                    <p>Documentos adjuntos: [Lista de documentos adjuntos]</p>
-                    <p><strong>Atentamente,</strong><br>
-                    Kevin Sánchez Bogarín<br>
-                    Asesor Nacional<br>
-                    MEP - Costa Rica</p>
-                `;
-            }
-            
-            sendViaOutlook() {
-                const subject = encodeURIComponent(document.getElementById('email-subject').value);
-                const body = encodeURIComponent(document.getElementById('email-editor').innerHTML);
-                const recipient = document.getElementById('email-recipient').value;
+                content += `TAREAS REALIZADAS:\n`;
+                content += `─────────────────\n`;
                 
-                let to = '';
-                switch(recipient) {
-                    case 'supervisor':
-                        to = 'supervisor@mep.go.cr';
-                        break;
-                    case 'equipo':
-                        to = 'equipo.drte@mep.go.cr';
-                        break;
-                    case 'coordinacion':
-                        to = 'coordinacion.pnft@mep.go.cr';
-                        break;
-                    default:
-                        to = '';
+                if (tasks.length > 0) {
+                    tasks.forEach((task, index) => {
+                        content += `${index + 1}. ${task.title} (${task.status})\n`;
+                    });
+                } else {
+                    content += `No hay tareas registradas para este día.\n`;
                 }
                 
-                const mailtoLink = `https://outlook.office.com/mail/deeplink/compose?to=${to}&subject=${subject}&body=${body}`;
-                window.open(mailtoLink, '_blank');
+                content += `\nARCHIVOS ADJUNTOS:\n`;
+                content += `─────────────────\n`;
                 
-                this.showNotification('Correo preparado', 'Redirigiendo a Outlook MEP...', 'success');
+                if (files.length > 0) {
+                    files.forEach(file => {
+                        content += `• ${file.name} (${this.formatFileSize(file.size)})\n`;
+                    });
+                } else {
+                    content += `No hay archivos adjuntos.\n`;
+                }
+                
+                content += `\n───────────────────────\n`;
+                content += `Generado automáticamente por Sistema Agenda DRTE\n`;
+                content += `MEP Costa Rica - Dirección de Recursos Tecnológicos en Educación`;
+                
+                return content;
             }
             
             // ============================================
             // UTILIDADES
             // ============================================
             
-            formatDate(date) {
-                return date.toLocaleDateString('es-CR', {
+            formatDateInput(date) {
+                return date.toISOString().split('T')[0];
+            }
+            
+            formatDateDisplay(date) {
+                const options = {
                     weekday: 'long',
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
-                });
-            }
-            
-            formatDateForInput(date) {
-                return date.toISOString().split('T')[0];
+                    day: 'numeric',
+                    timeZone: 'America/Costa_Rica'
+                };
+                return date.toLocaleDateString('es-CR', options);
             }
             
             formatFileSize(bytes) {
@@ -1108,343 +1601,299 @@
             }
             
             getFileIcon(fileType) {
-                if (fileType.includes('pdf')) return 'fa-file-pdf';
-                if (fileType.includes('word') || fileType.includes('document')) return 'fa-file-word';
-                if (fileType.includes('excel') || fileType.includes('spreadsheet')) return 'fa-file-excel';
-                if (fileType.includes('image')) return 'fa-file-image';
-                if (fileType.includes('video')) return 'fa-file-video';
-                return 'fa-file';
+                if (fileType.includes('pdf')) return 'fas fa-file-pdf';
+                if (fileType.includes('word')) return 'fas fa-file-word';
+                if (fileType.includes('excel') || fileType.includes('sheet')) return 'fas fa-file-excel';
+                if (fileType.includes('image')) return 'fas fa-file-image';
+                if (fileType.includes('csv')) return 'fas fa-file-csv';
+                return 'fas fa-file';
             }
             
-            updateDateTime() {
-                const now = new Date();
-                document.getElementById('current-datetime').innerHTML = 
-                    `<i class="fas fa-clock"></i> ${now.toLocaleString('es-CR', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                    })} UTC-6 🇨🇷`;
+            getFileColor(fileType) {
+                if (fileType.includes('pdf')) return '#f44336';
+                if (fileType.includes('word')) return '#2b579a';
+                if (fileType.includes('excel') || fileType.includes('sheet')) return '#217346';
+                if (fileType.includes('image')) return '#4caf50';
+                if (fileType.includes('csv')) return '#ff9800';
+                return '#9e9e9e';
             }
             
-            updateDateNavigation() {
-                const year = this.currentDate.getFullYear();
-                const month = this.currentDate.toLocaleDateString('es-CR', { month: 'long' });
-                const day = this.currentDate.getDate();
-                
-                document.getElementById('current-year').textContent = year;
-                document.getElementById('current-month').textContent = month;
-                document.getElementById('current-day').textContent = day;
-                document.getElementById('file-date-selector').value = this.formatDateForInput(this.currentDate);
-            }
-            
-            navigateDate(direction) {
-                if (direction === 'prev') {
-                    this.currentDate.setDate(this.currentDate.getDate() - 1);
-                } else {
-                    this.currentDate.setDate(this.currentDate.getDate() + 1);
-                }
-                this.updateDateNavigation();
-                this.updateFileStructure();
-            }
-            
-            goToSelectedDate() {
-                const selectedDate = document.getElementById('file-date-selector').value;
-                if (selectedDate) {
-                    this.currentDate = new Date(selectedDate);
-                    this.updateDateNavigation();
-                    this.updateFileStructure();
-                }
-            }
-            
-            showNotification(title, message, type = 'info') {
-                // Crear notificación simple
-                const notification = document.createElement('div');
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 15px 20px;
-                    background: ${type === 'success' ? '#00b894' : type === 'error' ? '#d63031' : '#0984e3'};
-                    color: white;
-                    border-radius: var(--border-radius);
-                    box-shadow: var(--box-shadow);
-                    z-index: 10000;
-                    animation: slideIn 0.3s ease;
-                `;
-                
-                notification.innerHTML = `
-                    <strong>${title}</strong>
-                    <p style="margin: 5px 0 0; font-size: 0.9rem;">${message}</p>
-                `;
-                
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => notification.remove(), 300);
-                }, 5000);
-            }
-            
-            async loadData() {
-                try {
-                    await this.fileSystem.init();
-                    await this.updateFileStructure();
-                    await this.updateFileStats();
-                    this.loadJournal();
-                } catch (error) {
-                    console.error('Error cargando datos:', error);
-                }
-            }
-            
-            getCurrentAttachments() {
-                // Obtener archivos adjuntos actuales
-                const attachments = [];
-                const container = document.getElementById('journal-attachments');
-                const fileItems = container.querySelectorAll('.file-item');
-                
-                fileItems.forEach(item => {
-                    const fileId = item.dataset.fileId;
-                    if (fileId) {
-                        attachments.push(fileId);
-                    }
-                });
-                
-                return attachments;
-            }
-            
-            loadJournalAttachments(attachmentIds) {
-                const container = document.getElementById('journal-attachments');
-                container.innerHTML = '';
-                
-                // Cargar información de archivos adjuntos
-                attachmentIds.forEach(async fileId => {
-                    const file = await this.fileSystem.getFile(fileId);
-                    if (file) {
-                        const div = document.createElement('div');
-                        div.className = 'file-item';
-                        div.dataset.fileId = fileId;
-                        div.innerHTML = `
-                            <i class="fas ${this.getFileIcon(file.type)}"></i>
-                            <span>${file.name}</span>
-                            <button class="toolbar-btn" onclick="downloadFile('${fileId}')">
-                                <i class="fas fa-download"></i>
-                            </button>
-                        `;
-                        container.appendChild(div);
-                    }
-                });
-            }
-            
-            backupJournalEntry(entry) {
-                // Crear backup en localStorage
-                const backups = JSON.parse(localStorage.getItem('journal_backups') || '[]');
-                backups.push({
-                    ...entry,
-                    backedUpAt: new Date().toISOString()
-                });
-                
-                // Mantener solo los últimos 100 backups
-                if (backups.length > 100) {
-                    backups.shift();
-                }
-                
-                localStorage.setItem('journal_backups', JSON.stringify(backups));
-            }
-            
-            getWeekNumber() {
-                const date = new Date();
-                const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-                const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-                return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-            }
-        }
-        
-        // ============================================
-        // SISTEMA DE ARCHIVOS CON INDEXEDDB
-        // ============================================
-        
-        class FileSystemManager {
-            constructor() {
-                this.db = null;
-                this.dbName = 'AgendaDRTE_Files_v2';
-                this.dbVersion = 2;
-            }
-            
-            async init() {
+            async readFileAsArrayBuffer(file) {
                 return new Promise((resolve, reject) => {
-                    const request = indexedDB.open(this.dbName, this.dbVersion);
-                    
-                    request.onerror = () => reject('Error al abrir IndexedDB');
-                    
-                    request.onsuccess = (event) => {
-                        this.db = event.target.result;
-                        console.log('✅ IndexedDB inicializada');
-                        resolve();
-                    };
-                    
-                    request.onupgradeneeded = (event) => {
-                        const db = event.target.result;
-                        
-                        // Crear almacén para archivos
-                        if (!db.objectStoreNames.contains('files')) {
-                            const filesStore = db.createObjectStore('files', { keyPath: 'id' });
-                            filesStore.createIndex('date', 'metadata.date', { unique: false });
-                            filesStore.createIndex('year', 'metadata.year', { unique: false });
-                            filesStore.createIndex('month', 'metadata.month', { unique: false });
-                            filesStore.createIndex('day', 'metadata.day', { unique: false });
-                        }
-                        
-                        // Crear almacén para bitácoras
-                        if (!db.objectStoreNames.contains('journals')) {
-                            const journalsStore = db.createObjectStore('journals', { keyPath: 'id' });
-                            journalsStore.createIndex('date', 'date', { unique: true });
-                        }
-                    };
-                });
-            }
-            
-            async saveFile(file, metadata = {}) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['files'], 'readwrite');
-                    const store = transaction.objectStore('files');
-                    
                     const reader = new FileReader();
-                    
-                    reader.onload = async (event) => {
-                        const fileData = {
-                            id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
-                            name: file.name,
-                            type: file.type,
-                            size: file.size,
-                            data: event.target.result,
-                            metadata: {
-                                ...metadata,
-                                uploadedAt: new Date().toISOString(),
-                                originalName: file.name
-                            }
-                        };
-                        
-                        const request = store.put(fileData);
-                        
-                        request.onsuccess = () => {
-                            console.log('📁 Archivo guardado:', file.name);
-                            resolve(fileData.id);
-                        };
-                        
-                        request.onerror = () => reject('Error al guardar archivo');
-                    };
-                    
-                    reader.onerror = () => reject('Error al leer archivo');
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(e);
                     reader.readAsArrayBuffer(file);
                 });
             }
             
-            async getFile(fileId) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['files'], 'readonly');
-                    const store = transaction.objectStore('files');
-                    const request = store.get(fileId);
+            updateDateTime() {
+                const now = new Date();
+                const options = {
+                    timeZone: 'America/Costa_Rica',
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+                
+                const formatter = new Intl.DateTimeFormat('es-CR', options);
+                document.getElementById('datetime-text').textContent = formatter.format(now);
+                
+                // Actualizar fecha en dashboard
+                document.getElementById('today-date').textContent = this.formatDateDisplay(now);
+            }
+            
+            async loadDashboardStats() {
+                try {
+                    // Obtener conteos
+                    const [tasks, files] = await Promise.all([
+                        this.getAllTasks(),
+                        this.getAllFiles()
+                    ]);
                     
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject('Error al obtener archivo');
-                });
+                    const completedTasks = tasks.filter(t => t.status === 'completada').length;
+                    
+                    // Actualizar UI
+                    document.getElementById('total-tasks').textContent = tasks.length;
+                    document.getElementById('completed-tasks').textContent = completedTasks;
+                    document.getElementById('total-files').textContent = files.length;
+                    
+                } catch (error) {
+                    console.error('Error cargando estadísticas:', error);
+                }
+            }
+            
+            async getAllTasks() {
+                const transaction = this.db.transaction(['tasks'], 'readonly');
+                const store = transaction.objectStore('tasks');
+                return store.getAll();
             }
             
             async getAllFiles() {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['files'], 'readonly');
-                    const store = transaction.objectStore('files');
-                    const request = store.getAll();
-                    
-                    request.onsuccess = () => resolve(request.result || []);
-                    request.onerror = () => reject('Error al obtener archivos');
-                });
+                const transaction = this.db.transaction(['files'], 'readonly');
+                const store = transaction.objectStore('files');
+                return store.getAll();
+            }
+            
+            async getTasksByDate(date) {
+                const transaction = this.db.transaction(['tasks'], 'readonly');
+                const store = transaction.objectStore('tasks');
+                const index = store.index('date');
+                return index.getAll(date);
             }
             
             async getFilesByDate(date) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['files'], 'readonly');
-                    const store = transaction.objectStore('files');
-                    const index = store.index('date');
-                    const request = index.getAll(date);
-                    
-                    request.onsuccess = () => resolve(request.result || []);
-                    request.onerror = () => reject('Error al obtener archivos por fecha');
-                });
+                const transaction = this.db.transaction(['files'], 'readonly');
+                const store = transaction.objectStore('files');
+                const index = store.index('date');
+                return index.getAll(date);
             }
             
-            async deleteFile(fileId) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['files'], 'readwrite');
-                    const store = transaction.objectStore('files');
-                    const request = store.delete(fileId);
-                    
-                    request.onsuccess = () => resolve();
-                    request.onerror = () => reject('Error al eliminar archivo');
-                });
+            async getJournalByDate(date) {
+                const transaction = this.db.transaction(['journals'], 'readonly');
+                const store = transaction.objectStore('journals');
+                const index = store.index('date');
+                const result = await index.get(date);
+                return result || null;
             }
             
-            async saveJournalEntry(entry) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['journals'], 'readwrite');
-                    const store = transaction.objectStore('journals');
-                    const request = store.put(entry);
-                    
-                    request.onsuccess = () => resolve();
-                    request.onerror = () => reject('Error al guardar bitácora');
+            backupToLocalStorage(type, data) {
+                const backups = JSON.parse(localStorage.getItem(`backup_${type}`) || '[]');
+                backups.push({
+                    ...data,
+                    backedUpAt: new Date().toISOString()
                 });
+                
+                // Mantener solo los últimos 50 backups
+                if (backups.length > 50) {
+                    backups.shift();
+                }
+                
+                localStorage.setItem(`backup_${type}`, JSON.stringify(backups));
             }
             
-            async getJournalEntry(date) {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['journals'], 'readonly');
-                    const store = transaction.objectStore('journals');
-                    const index = store.index('date');
-                    const request = index.get(date);
-                    
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject('Error al obtener bitácora');
-                });
+            showAlert(message, type) {
+                // Crear notificación
+                const alert = document.createElement('div');
+                alert.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 25px;
+                    background: ${type === 'success' ? '#4caf50' : 
+                                type === 'warning' ? '#ff9800' : '#f44336'};
+                    color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                `;
+                
+                alert.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                    type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(alert);
+                
+                setTimeout(() => {
+                    alert.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => alert.remove(), 300);
+                }, 3000);
             }
             
-            async getAllJournals() {
-                return new Promise((resolve, reject) => {
-                    const transaction = this.db.transaction(['journals'], 'readonly');
-                    const store = transaction.objectStore('journals');
-                    const request = store.getAll();
-                    
-                    request.onsuccess = () => resolve(request.result || []);
-                    request.onerror = () => reject('Error al obtener bitácoras');
+            setupEventListeners() {
+                // Sistema de tabs
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const tabId = btn.dataset.tab;
+                        this.switchTab(tabId);
+                    });
                 });
+                
+                // Subida de archivos
+                const fileInput = document.getElementById('file-input');
+                fileInput.addEventListener('change', (e) => {
+                    const files = Array.from(e.target.files);
+                    if (files.length > 0) {
+                        this.uploadFiles(files);
+                        fileInput.value = ''; // Reset input
+                    }
+                });
+                
+                // Drag and drop para archivos
+                const dropArea = document.getElementById('file-drop-area');
+                dropArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropArea.classList.add('dragover');
+                });
+                
+                dropArea.addEventListener('dragleave', () => {
+                    dropArea.classList.remove('dragover');
+                });
+                
+                dropArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropArea.classList.remove('dragover');
+                    const files = Array.from(e.dataTransfer.files);
+                    if (files.length > 0) {
+                        this.uploadFiles(files);
+                    }
+                });
+                
+                // Configurar fecha inicial de reportes
+                const today = this.formatDateInput(new Date());
+                document.getElementById('report-start').value = today;
+                document.getElementById('report-end').value = today;
+            }
+            
+            switchTab(tabId) {
+                // Ocultar todos los tabs
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Desactivar todos los botones
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Mostrar tab seleccionado
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+                
+                // Cargar datos si es necesario
+                if (tabId === 'dashboard') {
+                    this.loadDashboardStats();
+                } else if (tabId === 'tareas') {
+                    this.loadTasks();
+                } else if (tabId === 'archivos') {
+                    this.loadFilesForDate();
+                } else if (tabId === 'calendario') {
+                    this.generateCalendar();
+                }
+            }
+            
+            openTaskModal() {
+                document.getElementById('task-modal').style.display = 'flex';
+            }
+            
+            closeTaskModal() {
+                document.getElementById('task-modal').style.display = 'none';
+                // Limpiar formulario
+                document.getElementById('task-function').value = '';
+                document.getElementById('task-title').value = '';
+                document.getElementById('task-description').value = '';
+                document.getElementById('task-date').value = this.formatDateInput(new Date());
+                document.getElementById('task-priority').value = 'normal';
+                document.getElementById('task-status').value = 'pendiente';
+            }
+            
+            prevDate() {
+                const dateInput = document.getElementById('file-date');
+                const currentDate = new Date(dateInput.value);
+                currentDate.setDate(currentDate.getDate() - 1);
+                dateInput.value = this.formatDateInput(currentDate);
+                this.loadFilesForDate();
+            }
+            
+            nextDate() {
+                const dateInput = document.getElementById('file-date');
+                const currentDate = new Date(dateInput.value);
+                currentDate.setDate(currentDate.getDate() + 1);
+                dateInput.value = this.formatDateInput(currentDate);
+                this.loadFilesForDate();
             }
         }
         
         // ============================================
-        // INICIALIZACIÓN GLOBAL
+        // INICIALIZACIÓN DEL SISTEMA
         // ============================================
         
         let agendaSystem;
         
         document.addEventListener('DOMContentLoaded', async function() {
             try {
-                agendaSystem = new AgendaDRTEProfessional();
+                agendaSystem = new AgendaDRTE();
                 
                 // Hacer funciones globales
-                window.agenda = agendaSystem;
-                window.switchTab = switchTab;
-                window.openFileUpload = openFileUpload;
-                window.handleDragOver = handleDragOver;
-                window.handleDragLeave = handleDragLeave;
-                window.handleFileDrop = handleFileDrop;
-                window.downloadFile = downloadFile;
-                window.previewFile = previewFile;
-                window.deleteFile = deleteFile;
+                window.switchTab = (tabId) => agendaSystem.switchTab(tabId);
+                window.saveJournal = () => agendaSystem.saveJournal();
+                window.loadJournal = () => agendaSystem.loadJournal();
+                window.loadTodayJournal = () => agendaSystem.loadTodayJournal();
+                window.insertJournalTemplate = (type) => agendaSystem.insertJournalTemplate(type);
+                window.openTaskModal = () => agendaSystem.openTaskModal();
+                window.closeTaskModal = () => agendaSystem.closeTaskModal();
+                window.saveTask = () => agendaSystem.saveTask();
+                window.filterTasks = (filter) => agendaSystem.loadTasks(filter);
+                window.toggleTaskStatus = (taskId) => agendaSystem.toggleTaskStatus(taskId);
+                window.deleteTask = (taskId) => agendaSystem.deleteTask(taskId);
+                window.openFileUpload = () => document.getElementById('file-input').click();
+                window.loadFilesForDate = () => agendaSystem.loadFilesForDate();
+                window.prevDate = () => agendaSystem.prevDate();
+                window.nextDate = () => agendaSystem.nextDate();
+                window.downloadFile = (fileId) => agendaSystem.downloadFile(fileId);
+                window.prevMonth = () => agendaSystem.prevMonth();
+                window.nextMonth = () => agendaSystem.nextMonth();
+                window.generateDailyReport = () => agendaSystem.generateDailyReport();
+                window.formatText = (command) => {
+                    document.execCommand(command, false, null);
+                };
+                window.insertBulletList = () => {
+                    document.execCommand('insertUnorderedList', false, null);
+                };
+                window.insertNumberedList = () => {
+                    document.execCommand('insertOrderedList', false, null);
+                };
                 
-                console.log('🚀 Sistema Agenda DRTE Professional cargado');
+                console.log('🚀 Sistema Agenda DRTE MEP inicializado');
                 
             } catch (error) {
                 console.error('❌ Error crítico:', error);
@@ -1452,141 +1901,19 @@
             }
         });
         
-        // Funciones globales
-        function switchTab(tabName) {
-            // Ocultar todos los tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Desactivar todos los botones
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Mostrar tab seleccionado
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            event.target.classList.add('active');
-        }
-        
-        function openFileUpload() {
-            document.getElementById('file-upload-input').click();
-        }
-        
-        async function handleFileDrop(event) {
-            event.preventDefault();
-            document.getElementById('file-drop-area').classList.remove('dragover');
-            
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                await agendaSystem.uploadFiles(files);
+        // Animaciones CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
             }
-        }
-        
-        function handleDragOver(event) {
-            event.preventDefault();
-            document.getElementById('file-drop-area').classList.add('dragover');
-        }
-        
-        function handleDragLeave(event) {
-            event.preventDefault();
-            document.getElementById('file-drop-area').classList.remove('dragover');
-        }
-        
-        async function downloadFile(fileId) {
-            try {
-                const file = await agendaSystem.fileSystem.getFile(fileId);
-                if (!file) {
-                    throw new Error('Archivo no encontrado');
-                }
-                
-                const blob = new Blob([file.data], { type: file.type });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = file.name;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                agendaSystem.showNotification('Descarga iniciada', `Descargando ${file.name}`, 'success');
-                
-            } catch (error) {
-                agendaSystem.showNotification('Error', 'No se pudo descargar el archivo', 'error');
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
             }
-        }
-        
-        async function previewFile(fileId) {
-            try {
-                const file = await agendaSystem.fileSystem.getFile(fileId);
-                if (!file) {
-                    throw new Error('Archivo no encontrado');
-                }
-                
-                const blob = new Blob([file.data], { type: file.type });
-                const url = URL.createObjectURL(blob);
-                
-                if (file.type.includes('pdf')) {
-                    window.open(url, '_blank');
-                } else if (file.type.includes('image')) {
-                    const imgWindow = window.open('', '_blank');
-                    imgWindow.document.write(`
-                        <html>
-                            <head><title>${file.name}</title></head>
-                            <body style="margin:0; padding:20px; background:#1a1a2e;">
-                                <img src="${url}" style="max-width:100%; max-height:90vh; display:block; margin:auto;">
-                            </body>
-                        </html>
-                    `);
-                } else {
-                    window.open(url, '_blank');
-                }
-                
-            } catch (error) {
-                agendaSystem.showNotification('Error', 'No se pudo previsualizar el archivo', 'error');
-            }
-        }
-        
-        async function deleteFile(fileId) {
-            if (!confirm('¿Está seguro de eliminar este archivo?')) return;
-            
-            try {
-                await agendaSystem.fileSystem.deleteFile(fileId);
-                
-                // Eliminar de la interfaz
-                const element = document.querySelector(`[data-file-id="${fileId}"]`);
-                if (element) {
-                    element.remove();
-                }
-                
-                agendaSystem.updateFileStats();
-                agendaSystem.showNotification('Archivo eliminado', 'El archivo ha sido eliminado', 'success');
-                
-            } catch (error) {
-                agendaSystem.showNotification('Error', 'No se pudo eliminar el archivo', 'error');
-            }
-        }
-        
-        // Configurar subida de archivos
-        document.getElementById('file-upload-input').addEventListener('change', async function(e) {
-            const files = Array.from(e.target.files);
-            if (files.length > 0) {
-                await agendaSystem.uploadFiles(files);
-                e.target.value = ''; // Reset input
-            }
-        });
-        
-        // Configurar fecha de bitácora
-        document.getElementById('journal-date').addEventListener('change', function() {
-            agendaSystem.journalDate = new Date(this.value);
-            agendaSystem.loadJournal();
-        });
-        
-        // Configurar plantillas de correo
-        document.getElementById('email-template').addEventListener('change', function() {
-            agendaSystem.loadEmailTemplate();
-        });
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
