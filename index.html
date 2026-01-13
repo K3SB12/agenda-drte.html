@@ -1636,7 +1636,12 @@
         // ===== CONFIGURACIÓN INICIAL Y CONSTANTES =====
         const SISTEMA_VERSION = '3.0';
         const SISTEMA_NOMBRE = 'DRTE MEP - Sistema Integral de Agenda y Evidencias';
-        const MAX_TAMANIO_ARCHIVO = 50 * 1024 * 1024; // 50MB en bytes
+        
+        // ===== NUEVO: SISTEMA HÍBRIDO DE ALMACENAMIENTO =====
+        const MAX_TAMANIO_ARCHIVO = 10 * 1024 * 1024; // 10MB máximo
+        const UMBRAL_LOCALSTORAGE = 1 * 1024 * 1024;  // Archivos < 1MB van a localStorage
+        let db = null; // Para IndexedDB
+        
         const FORMATOS_PERMITIDOS = [
             'application/pdf',
             'application/msword',
@@ -1691,12 +1696,68 @@
                 tareas: JSON.parse(localStorage.getItem('drte_tareas')) || [],
                 archivos: JSON.parse(localStorage.getItem('drte_archivos')) || []
             },
-            configuracion: JSON.parse(localStorage.getItem('drte_config')) || { tema: 'claro' },
-            archivosDB: null // Para IndexedDB
+            configuracion: JSON.parse(localStorage.getItem('drte_config')) || { tema: 'claro' }
         };
         
+        // ===== NUEVO: INDEXEDDB PARA ARCHIVOS GRANDES =====
+        function inicializarIndexedDB() {
+            return new Promise((resolve) => {
+                if (!window.indexedDB) {
+                    console.log("IndexedDB no soportado, usando solo localStorage");
+                    resolve(false);
+                    return;
+                }
+                
+                const request = indexedDB.open('DRTE_ArchivosGrandes', 1);
+                
+                request.onerror = () => {
+                    console.warn("Error abriendo IndexedDB");
+                    resolve(false);
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log("IndexedDB inicializado para archivos grandes");
+                    resolve(true);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('archivos')) {
+                        database.createObjectStore('archivos', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+        
+        async function guardarArchivoEnIndexedDB(archivo) {
+            if (!db) return null;
+            
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['archivos'], 'readwrite');
+                const store = transaction.objectStore('archivos');
+                const request = store.put(archivo);
+                
+                request.onsuccess = () => resolve(archivo.id);
+                request.onerror = reject;
+            });
+        }
+        
+        async function obtenerArchivoDeIndexedDB(id) {
+            if (!db) return null;
+            
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['archivos'], 'readonly');
+                const store = transaction.objectStore('archivos');
+                const request = store.get(id);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = reject;
+            });
+        }
+        
         // ===== INICIALIZACIÓN DEL SISTEMA =====
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             inicializarSistema();
             configurarNavegacion();
             configurarEventListeners();
@@ -1707,8 +1768,14 @@
             cargarArchivos();
             actualizarFechaHoraCR();
             
-            // Inicializar IndexedDB para archivos grandes
-            inicializarIndexedDB();
+            // NUEVO: Inicializar IndexedDB para archivos grandes
+            try {
+                await inicializarIndexedDB();
+                console.log('✅ Sistema híbrido activado: localStorage + IndexedDB');
+                mostrarNotificacion('Sistema optimizado para archivos grandes', 'info', 3000);
+            } catch (error) {
+                console.warn('IndexedDB no disponible, usando solo localStorage');
+            }
         });
         
         // ===== FUNCIONES DE INICIALIZACIÓN =====
@@ -2113,8 +2180,6 @@
             document.getElementById('horas-bitacora').value = bitacora.horas;
             document.getElementById('referencia-bitacora').value = bitacora.referencia || '';
             
-            // Cargar archivos adjuntos (simplificado - en implementación real cargaría vista previa)
-            
             // Cambiar texto del botón
             const btnGuardar = document.getElementById('btnGuardarBitacora');
             const textoOriginal = btnGuardar.innerHTML;
@@ -2296,6 +2361,79 @@ Departamento de Investigación, Desarrollo e Implementación`;
         }
         
         // ===== FUNCIONES DE ARCHIVOS =====
+        // NUEVO: Función mejorada con sistema híbrido
+        async function procesarArchivo(file, tipo) {
+            return new Promise((resolve, reject) => {
+                // Validaciones mejoradas
+                if (file.size > MAX_TAMANIO_ARCHIVO) {
+                    mostrarNotificacion(`"${file.name}" excede el límite de 10MB`, 'error');
+                    reject(new Error('Tamaño excedido'));
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = async function(e) {
+                    try {
+                        const contenido = e.target.result;
+                        const idArchivo = 'arch_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                        
+                        // Crear objeto archivo
+                        const nuevoArchivo = {
+                            id: idArchivo,
+                            nombre: file.name,
+                            tipo: file.type,
+                            tamaño: file.size,
+                            fechaSubida: new Date().toISOString(),
+                            fechaArchivo: tipo === 'bitacora' 
+                                ? document.getElementById('fecha-bitacora').value 
+                                : formatearFechaCR(),
+                            relacion: tipo === 'bitacora' ? 'bitacora' : 'general',
+                            // SISTEMA HÍBRIDO: pequeño en localStorage, grande en IndexedDB
+                            contenido: file.size < UMBRAL_LOCALSTORAGE ? contenido : 'INDEXEDDB::' + idArchivo,
+                            almacenamiento: file.size < UMBRAL_LOCALSTORAGE ? 'localStorage' : 'indexedDB'
+                        };
+                        
+                        // Si es archivo grande, guardar en IndexedDB
+                        if (file.size >= UMBRAL_LOCALSTORAGE) {
+                            const archivoCompleto = {
+                                id: idArchivo,
+                                blob: contenido,
+                                tipo: file.type,
+                                nombre: file.name,
+                                tamaño: file.size,
+                                fechaSubida: nuevoArchivo.fechaSubida
+                            };
+                            
+                            await guardarArchivoEnIndexedDB(archivoCompleto);
+                            console.log(`Archivo grande (${(file.size/1024/1024).toFixed(2)}MB) guardado en IndexedDB`);
+                        }
+                        
+                        // Guardar referencia en localStorage
+                        estadoSistema.datos.archivos.push(nuevoArchivo);
+                        guardarDatos();
+                        
+                        resolve(nuevoArchivo);
+                        
+                    } catch (error) {
+                        console.error('Error procesando archivo:', error);
+                        reject(error);
+                    }
+                };
+                
+                reader.onerror = () => {
+                    reject(new Error(`Error leyendo "${file.name}"`));
+                };
+                
+                // Leer según tamaño para optimizar
+                if (file.size < UMBRAL_LOCALSTORAGE) {
+                    reader.readAsDataURL(file); // Para archivos pequeños
+                } else {
+                    reader.readAsArrayBuffer(file); // Más eficiente para archivos grandes
+                }
+            });
+        }
+        
         function manejarSubidaArchivos(event, tipo) {
             const files = event.target.files;
             if (!files || files.length === 0) return;
@@ -2307,7 +2445,7 @@ Departamento de Investigación, Desarrollo e Implementación`;
                 
                 // Validar tamaño
                 if (file.size > MAX_TAMANIO_ARCHIVO) {
-                    mostrarNotificacion(`El archivo "${file.name}" excede el tamaño máximo de 50MB`, 'error');
+                    mostrarNotificacion(`El archivo "${file.name}" excede el tamaño máximo de 10MB`, 'error');
                     continue;
                 }
                 
@@ -2323,58 +2461,20 @@ Departamento de Investigación, Desarrollo e Implementación`;
             if (archivosValidos.length === 0) return;
             
             // Procesar archivos válidos
-            archivosValidos.forEach(file => {
-                procesarArchivo(file, tipo);
+            archivosValidos.forEach(async (file) => {
+                try {
+                    const archivoProcesado = await procesarArchivo(file, tipo);
+                    mostrarArchivoEnVistaPrevia(archivoProcesado, tipo);
+                    actualizarDashboard();
+                    mostrarNotificacion(`Archivo "${file.name}" subido exitosamente`, 'exito');
+                } catch (error) {
+                    console.error('Error procesando archivo:', error);
+                    mostrarNotificacion(`Error al subir "${file.name}"`, 'error');
+                }
             });
             
             // Limpiar input
             event.target.value = '';
-        }
-        
-        function procesarArchivo(file, tipo) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const contenido = e.target.result;
-                
-                // Crear objeto de archivo
-                const nuevoArchivo = {
-                    id: 'arch_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                    nombre: file.name,
-                    tipo: file.type,
-                    tamaño: file.size,
-                    fechaSubida: new Date().toISOString(),
-                    fechaArchivo: tipo === 'bitacora' 
-                        ? document.getElementById('fecha-bitacora').value 
-                        : formatearFechaCR(),
-                    contenido: contenido, // Para archivos pequeños (Base64)
-                    relacion: tipo === 'bitacora' ? 'bitacora' : 'general'
-                };
-                
-                // Agregar a datos
-                estadoSistema.datos.archivos.push(nuevoArchivo);
-                guardarDatos();
-                
-                // Mostrar en vista previa
-                mostrarArchivoEnVistaPrevia(nuevoArchivo, tipo);
-                
-                // Actualizar dashboard
-                actualizarDashboard();
-                
-                mostrarNotificacion(`Archivo "${file.name}" subido exitosamente`, 'exito');
-            };
-            
-            reader.onerror = function() {
-                mostrarNotificacion(`Error al leer el archivo "${file.name}"`, 'error');
-            };
-            
-            // Leer como DataURL (Base64) para archivos pequeños
-            if (file.size < 5 * 1024 * 1024) { // Menos de 5MB
-                reader.readAsDataURL(file);
-            } else {
-                // Para archivos grandes, leer como texto binario
-                reader.readAsBinaryString(file);
-            }
         }
         
         function mostrarArchivoEnVistaPrevia(archivo, tipo) {
@@ -2414,7 +2514,7 @@ Departamento de Investigación, Desarrollo e Implementación`;
                     <div class="nombre-archivo" title="${archivo.nombre}">${archivo.nombre.length > 30 ? archivo.nombre.substring(0, 30) + '...' : archivo.nombre}</div>
                     <div class="detalles-archivo">
                         ${formatearFechaLegible(archivo.fechaArchivo)}<br>
-                        ${tamañoFormateado}
+                        ${tamañoFormateado}${archivo.almacenamiento === 'indexedDB' ? ' 💾' : ''}
                     </div>
                     <div class="acciones-archivo">
                         <button class="btn-accion-archivo" onclick="verArchivo('${archivo.id}')" title="Ver">
@@ -2483,7 +2583,7 @@ Departamento de Investigación, Desarrollo e Implementación`;
                         <div class="nombre-archivo" title="${archivo.nombre}">${archivo.nombre.length > 30 ? archivo.nombre.substring(0, 30) + '...' : archivo.nombre}</div>
                         <div class="detalles-archivo">
                             ${formatearFechaLegible(archivo.fechaArchivo)}<br>
-                            ${tamañoFormateado}
+                            ${tamañoFormateado}${archivo.almacenamiento === 'indexedDB' ? ' 💾' : ''}
                         </div>
                         <div class="acciones-archivo">
                             <button class="btn-accion-archivo" onclick="verArchivo('${archivo.id}')" title="Ver">
@@ -2503,89 +2603,139 @@ Departamento de Investigación, Desarrollo e Implementación`;
             contenedor.innerHTML = html;
         }
         
-        function verArchivo(id) {
-            const archivo = estadoSistema.datos.archivos.find(a => a.id === id);
-            if (!archivo) return;
-            
-            const modal = document.getElementById('modalArchivo');
-            const titulo = document.getElementById('tituloModalArchivo');
-            const contenido = document.getElementById('contenidoModalArchivo');
-            
-            titulo.textContent = `Vista Previa: ${archivo.nombre}`;
-            
-            // Mostrar contenido según tipo de archivo
-            if (archivo.tipo.includes('image')) {
-                contenido.innerHTML = `
-                    <div style="text-align: center;">
-                        <img src="${archivo.contenido}" alt="${archivo.nombre}" style="max-width: 100%; max-height: 70vh; border-radius: 10px;">
-                        <p style="margin-top: 15px; color: var(--color-texto-secundario);">
-                            <i class="fas fa-info-circle"></i> ${archivo.nombre} (${archivo.tipo})
-                        </p>
-                    </div>
-                `;
-            } else if (archivo.tipo.includes('pdf')) {
-                contenido.innerHTML = `
-                    <div style="text-align: center;">
-                        <iframe src="${archivo.contenido}" width="100%" height="600" style="border: none; border-radius: 10px;"></iframe>
-                        <p style="margin-top: 15px; color: var(--color-texto-secundario);">
-                            <i class="fas fa-info-circle"></i> PDF: ${archivo.nombre}
-                        </p>
-                    </div>
-                `;
-            } else {
-                contenido.innerHTML = `
-                    <div style="text-align: center; padding: 40px;">
-                        <i class="fas fa-file ${archivo.tipo.includes('pdf') ? 'pdf' : archivo.tipo.includes('word') ? 'word' : archivo.tipo.includes('excel') ? 'excel' : 'otro'}" style="font-size: 5rem; margin-bottom: 20px;"></i>
-                        <h4>${archivo.nombre}</h4>
-                        <p>Tipo: ${archivo.tipo}</p>
-                        <p>Tamaño: ${archivo.tamaño < 1024 * 1024 ? (archivo.tamaño / 1024).toFixed(1) + ' KB' : (archivo.tamaño / (1024 * 1024)).toFixed(1) + ' MB'}</p>
-                        <p>Subido: ${formatearFechaLegible(archivo.fechaSubida)}</p>
-                        <button class="boton boton-principal" onclick="descargarArchivo('${archivo.id}')" style="margin-top: 20px;">
-                            <i class="fas fa-download"></i> Descargar Archivo
-                        </button>
-                    </div>
-                `;
+        // NUEVO: Función mejorada para ver archivos
+        async function verArchivo(id) {
+            try {
+                const archivo = estadoSistema.datos.archivos.find(a => a.id === id);
+                if (!archivo) {
+                    mostrarNotificacion("Archivo no encontrado", "error");
+                    return;
+                }
+                
+                let contenidoParaMostrar = archivo.contenido;
+                
+                // Si está en IndexedDB, obtenerlo
+                if (archivo.contenido.startsWith('INDEXEDDB::')) {
+                    const idIndexedDB = archivo.contenido.split('::')[1];
+                    const archivoCompleto = await obtenerArchivoDeIndexedDB(idIndexedDB);
+                    
+                    if (archivoCompleto && archivoCompleto.blob) {
+                        // Convertir ArrayBuffer a DataURL
+                        const blob = new Blob([archivoCompleto.blob], { type: archivo.tipo });
+                        contenidoParaMostrar = await new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.readAsDataURL(blob);
+                        });
+                    } else {
+                        mostrarNotificacion("No se pudo cargar el archivo desde la base de datos", "error");
+                        return;
+                    }
+                }
+                
+                const modal = document.getElementById('modalArchivo');
+                const titulo = document.getElementById('tituloModalArchivo');
+                const contenido = document.getElementById('contenidoModalArchivo');
+                
+                titulo.textContent = `Vista Previa: ${archivo.nombre}`;
+                
+                if (archivo.tipo.includes('image')) {
+                    contenido.innerHTML = `
+                        <div style="text-align: center;">
+                            <img src="${contenidoParaMostrar}" alt="${archivo.nombre}" style="max-width: 100%; max-height: 70vh; border-radius: 10px;">
+                            <p style="margin-top: 15px; color: var(--color-texto-secundario);">
+                                <i class="fas fa-info-circle"></i> ${archivo.nombre} (${(archivo.tamaño/1024/1024).toFixed(2)}MB)
+                            </p>
+                        </div>
+                    `;
+                } else if (archivo.tipo.includes('pdf')) {
+                    contenido.innerHTML = `
+                        <div style="text-align: center;">
+                            <iframe src="${contenidoParaMostrar}" width="100%" height="600" style="border: none; border-radius: 10px;"></iframe>
+                            <p style="margin-top: 15px; color: var(--color-texto-secundario);">
+                                <i class="fas fa-info-circle"></i> ${archivo.nombre} - Archivo grande (IndexedDB)
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    contenido.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <i class="fas fa-file ${archivo.tipo.includes('pdf') ? 'pdf' : archivo.tipo.includes('word') ? 'word' : archivo.tipo.includes('excel') ? 'excel' : 'otro'}" style="font-size: 5rem; margin-bottom: 20px;"></i>
+                            <h4>${archivo.nombre}</h4>
+                            <p>Tipo: ${archivo.tipo}</p>
+                            <p>Tamaño: ${archivo.tamaño < 1024 * 1024 ? (archivo.tamaño / 1024).toFixed(1) + ' KB' : (archivo.tamaño / (1024 * 1024)).toFixed(1) + ' MB'}</p>
+                            <p>Almacenamiento: ${archivo.almacenamiento}</p>
+                            <button class="boton boton-principal" onclick="descargarArchivo('${archivo.id}')" style="margin-top: 20px;">
+                                <i class="fas fa-download"></i> Descargar Archivo
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                modal.style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Error al ver archivo:', error);
+                mostrarNotificacion('Error al cargar el archivo', 'error');
             }
-            
-            modal.style.display = 'flex';
         }
         
-        function descargarArchivo(id) {
-            const archivo = estadoSistema.datos.archivos.find(a => a.id === id);
-            if (!archivo) return;
-            
-            // Convertir base64 a blob si es necesario
-            let blob;
-            if (archivo.contenido.startsWith('data:')) {
-                // Es un data URL
-                const byteString = atob(archivo.contenido.split(',')[1]);
-                const mimeString = archivo.contenido.split(',')[0].split(':')[1].split(';')[0];
-                const ab = new ArrayBuffer(byteString.length);
-                const ia = new Uint8Array(ab);
-                for (let i = 0; i < byteString.length; i++) {
-                    ia[i] = byteString.charCodeAt(i);
+        // NUEVO: Función mejorada para descargar archivos
+        async function descargarArchivo(id) {
+            try {
+                const archivo = estadoSistema.datos.archivos.find(a => a.id === id);
+                if (!archivo) {
+                    mostrarNotificacion('Archivo no encontrado', 'error');
+                    return;
                 }
-                blob = new Blob([ab], { type: mimeString });
-            } else {
-                // Es texto binario
-                blob = new Blob([archivo.contenido], { type: archivo.tipo });
+                
+                let blob = null;
+                
+                // Si está en IndexedDB, obtenerlo
+                if (archivo.contenido.startsWith('INDEXEDDB::')) {
+                    const idIndexedDB = archivo.contenido.split('::')[1];
+                    const archivoCompleto = await obtenerArchivoDeIndexedDB(idIndexedDB);
+                    
+                    if (archivoCompleto && archivoCompleto.blob) {
+                        blob = new Blob([archivoCompleto.blob], { type: archivo.tipo });
+                    }
+                } else {
+                    // Archivo pequeño: usar DataURL existente
+                    const byteString = atob(archivo.contenido.split(',')[1]);
+                    const mimeString = archivo.contenido.split(',')[0].split(':')[1].split(';')[0];
+                    const ab = new ArrayBuffer(byteString.length);
+                    const ia = new Uint8Array(ab);
+                    for (let i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    blob = new Blob([ab], { type: mimeString });
+                }
+                
+                if (!blob) {
+                    mostrarNotificacion('Error al obtener archivo', 'error');
+                    return;
+                }
+                
+                // Crear enlace de descarga
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = archivo.nombre;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Limpiar
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                mostrarNotificacion(`Descargando "${archivo.nombre}"`, 'info');
+                
+            } catch (error) {
+                console.error('Error al descargar archivo:', error);
+                mostrarNotificacion('Error al descargar archivo', 'error');
             }
-            
-            // Crear enlace de descarga
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = archivo.nombre;
-            document.body.appendChild(a);
-            a.click();
-            
-            // Limpiar
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            mostrarNotificacion(`Descargando "${archivo.nombre}"`, 'info');
         }
         
         function eliminarArchivo(id, tipo) {
@@ -2593,8 +2743,14 @@ Departamento de Investigación, Desarrollo e Implementación`;
                 return;
             }
             
-            const index = estadoSistema.datos.archivos.findIndex(a => a.id === id);
-            if (index === -1) return;
+            // NUEVO: Si el archivo está en IndexedDB, eliminarlo también
+            const archivo = estadoSistema.datos.archivos.find(a => a.id === id);
+            if (archivo && archivo.contenido.startsWith('INDEXEDDB::') && db) {
+                const idIndexedDB = archivo.contenido.split('::')[1];
+                const transaction = db.transaction(['archivos'], 'readwrite');
+                const store = transaction.objectStore('archivos');
+                store.delete(idIndexedDB);
+            }
             
             // Eliminar de bitácoras si está asociado
             estadoSistema.datos.bitacoras.forEach(bitacora => {
@@ -2605,8 +2761,11 @@ Departamento de Investigación, Desarrollo e Implementación`;
             });
             
             // Eliminar archivo
-            estadoSistema.datos.archivos.splice(index, 1);
-            guardarDatos();
+            const index = estadoSistema.datos.archivos.findIndex(a => a.id === id);
+            if (index !== -1) {
+                estadoSistema.datos.archivos.splice(index, 1);
+                guardarDatos();
+            }
             
             // Actualizar vista
             if (tipo === 'bitacora') {
@@ -3278,7 +3437,7 @@ Departamento de Investigación, Desarrollo e Implementación`;
                             </div>
                             <div class="nombre-archivo" title="${archivo.nombre}">${archivo.nombre.length > 20 ? archivo.nombre.substring(0, 20) + '...' : archivo.nombre}</div>
                             <div class="detalles-archivo">
-                                ${tamañoFormateado}
+                                ${tamañoFormateado}${archivo.almacenamiento === 'indexedDB' ? ' 💾' : ''}
                             </div>
                             <div class="acciones-archivo">
                                 <button class="btn-accion-archivo" onclick="verArchivo('${archivo.id}')" title="Ver">
@@ -3490,11 +3649,6 @@ Departamento de Investigación, Desarrollo e Implementación`;
                 }
             });
             
-            // Aplicar filtro a tareas (similar lógica)
-            
-            // En una implementación completa, aquí se actualizaría la vista del dashboard
-            // con las actividades filtradas
-            
             mostrarNotificacion(`Filtro aplicado: ${filtro}`, 'info');
         }
         
@@ -3649,7 +3803,7 @@ Departamento de Investigación, Desarrollo e Implementación`;
                             <div class="nombre-archivo" title="${archivo.nombre}">${archivo.nombre.length > 30 ? archivo.nombre.substring(0, 30) + '...' : archivo.nombre}</div>
                             <div class="detalles-archivo">
                                 ${formatearFechaLegible(archivo.fechaArchivo)}<br>
-                                ${tamañoFormateado}
+                                ${tamañoFormateado}${archivo.almacenamiento === 'indexedDB' ? ' 💾' : ''}
                             </div>
                             <div class="acciones-archivo">
                                 <button class="btn-accion-archivo" onclick="verArchivo('${archivo.id}')" title="Ver">
@@ -4041,14 +4195,6 @@ Departamento de Investigación, Desarrollo e Implementación`;
             localStorage.setItem('drte_bitacoras', JSON.stringify(estadoSistema.datos.bitacoras));
             localStorage.setItem('drte_tareas', JSON.stringify(estadoSistema.datos.tareas));
             localStorage.setItem('drte_archivos', JSON.stringify(estadoSistema.datos.archivos));
-            
-            // En una implementación completa, también se guardaría en IndexedDB para archivos grandes
-        }
-        
-        function inicializarIndexedDB() {
-            // En una implementación real, aquí se inicializaría IndexedDB
-            // para almacenar archivos grandes que excedan los límites de localStorage
-            console.log('IndexedDB estaría inicializado para archivos grandes');
         }
         
         function crearRespaldoManual() {
