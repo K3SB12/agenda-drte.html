@@ -1727,7 +1727,7 @@ Sistema DRTE MEP`;
                     });
                     break;
                 case 'pdf':
-                    archivosFiltrados = archivosFiltrados.filter(a => a.tipo.includes('pdf') || a.nombre.match(/\.pdf$/i));
+                    archivosFiltrados = archivosFiltrados.filter(a => a.tipo.includes('pdf'));
                     break;
                 case 'imagenes':
                     archivosFiltrados = archivosFiltrados.filter(a => a.tipo.includes('image'));
