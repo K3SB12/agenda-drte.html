@@ -4077,6 +4077,76 @@
     min-height: 600px !important;
 }
 
+/* ===== FIX URGENTE: VISIBILIDAD DE DÍAS DEL CALENDARIO ===== */
+.calendario-dia-numero {
+    color: #000000 !important; /* Negro para todos los temas */
+    font-weight: bold !important;
+    font-size: 1.2rem !important;
+}
+
+.calendario-dia.otro-mes .calendario-dia-numero {
+    color: #666666 !important; /* Gris para días de otros meses */
+}
+
+.calendario-dia.hoy .calendario-dia-numero {
+    color: #0066CC !important; /* Azul para el día de hoy */
+    font-weight: 900 !important;
+}
+
+.calendario-dia.nombre-dia {
+    background: #0066CC !important;
+    color: white !important;
+}
+
+/* Asegurar contraste en todos los temas */
+[data-theme="dark"] .calendario-dia-numero {
+    color: #FFFFFF !important; /* Blanco en tema oscuro */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+}
+
+[data-theme="dark"] .calendario-dia.otro-mes .calendario-dia-numero {
+    color: #AAAAAA !important;
+}
+
+[data-theme="high-contrast"] .calendario-dia-numero {
+    color: #000000 !important;
+    background: #FFFFFF !important;
+    padding: 2px 6px !important;
+    border-radius: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Mejorar visibilidad de eventos */
+.calendario-evento {
+    font-size: 0.7rem !important;
+    padding: 3px 5px !important;
+    margin-bottom: 2px !important;
+    border-radius: 3px !important;
+    border-left: 3px solid !important;
+}
+
+.calendario-evento.evento-alta {
+    background: rgba(244, 67, 54, 0.2) !important;
+    color: #D32F2F !important;
+    border-left-color: #D32F2F !important;
+}
+
+.calendario-evento.evento-media {
+    background: rgba(255, 152, 0, 0.2) !important;
+    color: #F57C00 !important;
+    border-left-color: #F57C00 !important;
+}
+
+.calendario-evento.evento-baja {
+    background: rgba(76, 175, 80, 0.2) !important;
+    color: #388E3C !important;
+    border-left-color: #388E3C !important;
+}
+
         /* ===== END OF STYLES ===== */
     </style>
 </head>
