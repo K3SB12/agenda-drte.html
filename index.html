@@ -4968,6 +4968,7 @@
         let tareas = [];
         let eventos = [];
         let bitacoras = [];
+        let calendario = null; // ← AGREGAR ESTA LÍNEA
 
         // ===== INICIALIZACIÓN =====
         document.addEventListener('DOMContentLoaded', function() {
@@ -4991,6 +4992,7 @@
                 // Inicializar calendario
                 calendario = new CalendarioDRTE();
                 await calendario.inicializar();
+                window.calendario = calendario; // Hacer disponible globalmente
                 
                 // Configurar eventos de tema
                 document.querySelectorAll('.theme-option').forEach(boton => {
@@ -5014,6 +5016,18 @@
                 console.error('Error inicializando sistema:', error);
                 mostrarNotificacion('Error al inicializar el sistema', 'error');
             }
+        }
+
+        // Agregar esta función con las otras funciones de base de datos
+        async function obtenerTodosLosEventos() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['eventos'], 'readonly');
+                const store = transaction.objectStore('eventos');
+                const request = store.getAll();
+                
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => reject(request.error);
+            });
         }
 
         // ===== CALENDARIO FUNCIONAL =====
@@ -6227,6 +6241,13 @@
             // Actualizar título si es necesario
             actualizarTituloSeccion(sectionId);
             
+            // ===== NUEVO: Si es calendario, renderizarlo =====
+            if (sectionId === 'calendario' && calendario) {
+                setTimeout(() => {
+                    calendario.renderizarCalendario();
+                }, 100); // Pequeño delay para asegurar que el DOM esté listo
+            }
+            
             // Si es dashboard, actualizar datos
             if (sectionId === 'dashboard') {
                 actualizarDashboard();
@@ -6302,6 +6323,11 @@
                     e.preventDefault();
                     const sectionId = link.getAttribute('href').substring(1);
                     showSection(sectionId);
+
+                    // Si es calendario, asegurarse de que se renderice
+                    if (sectionId === 'calendario' && calendario) {
+                        calendario.renderizarCalendario();
+                    }
                 });
             });
             
