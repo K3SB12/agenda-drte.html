@@ -517,30 +517,48 @@
             border-top: 1px solid var(--border);
         }
 
-        /* ===== CALENDARIO ===== */
+               /* ===== CALENDARIO MEJORADO ===== */
         .calendario-container {
             background: white;
-            border-radius: 8px;
-            padding: 2rem;
+            border-radius: 12px;
+            padding: 24px;
             box-shadow: var(--shadow);
+            margin-bottom: 24px;
         }
-
+        
         [data-theme="dark"] .calendario-container {
             background: #2D333B;
         }
-
+        
         .calendario-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
         }
-
+        
         .calendario-vista {
             display: flex;
-            gap: 0.5rem;
+            gap: 8px;
+            background: var(--light);
+            padding: 4px;
+            border-radius: 8px;
         }
-
+        
+        .calendario-vista .btn {
+            border-radius: 6px;
+            padding: 8px 16px;
+            min-height: auto;
+        }
+        
+        .calendario-vista .btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
         .calendario-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -549,40 +567,105 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             overflow: hidden;
+            margin-bottom: 20px;
         }
-
+        
         .calendario-dia {
             background: white;
-            padding: 1rem;
+            padding: 12px;
             min-height: 120px;
             position: relative;
+            transition: all 0.2s;
+            cursor: pointer;
         }
-
+        
         [data-theme="dark"] .calendario-dia {
             background: #2D333B;
         }
-
+        
+        .calendario-dia:hover {
+            background: rgba(0, 102, 204, 0.05);
+            transform: translateY(-2px);
+            z-index: 1;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
         .calendario-dia.nombre-dia {
             background: var(--primary);
             color: white;
             text-align: center;
-            font-weight: 500;
-            padding: 0.5rem;
+            font-weight: 600;
+            padding: 12px;
             min-height: auto;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-
+        
         .calendario-dia.otro-mes {
             background: var(--light);
             color: var(--gray);
+            opacity: 0.6;
         }
-
+        
         .calendario-dia.hoy {
-            background: rgba(0,102,204,0.1);
+            background: rgba(0, 102, 204, 0.15);
+            border: 2px solid var(--primary);
         }
-
+        
         .calendario-dia-numero {
             font-weight: bold;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .calendario-eventos {
+            margin-top: 8px;
+        }
+        
+        .calendario-evento {
+            font-size: 0.75rem;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            background: rgba(0, 102, 204, 0.1);
+            color: var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .calendario-evento i {
+            font-size: 6px;
+        }
+        
+        .calendario-evento.evento-alta {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+        }
+        
+        .calendario-evento.evento-media {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+        
+        .calendario-evento.evento-baja {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+        
+        .calendario-mas-eventos {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-align: center;
+            padding: 2px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+            margin-top: 4px;
         }
 
         /* ===== SISTEMA DE ARCHIVOS ===== */
@@ -3571,6 +3654,404 @@
             font-family: 'Ubuntu', 'Cantarell', system-ui, sans-serif;
         }
 
+        /* ===== CALENDARIO MEJORADO ===== */
+.calendario-container {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+}
+
+[data-theme="dark"] .calendario-container {
+    background: #2D333B;
+}
+
+.calendario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+}
+
+.calendario-vista {
+    display: flex;
+    gap: 8px;
+    background: var(--light);
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.calendario-vista .btn {
+    border-radius: 6px;
+    padding: 8px 16px;
+    min-height: auto;
+}
+
+.calendario-vista .btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.calendario-dia {
+    background: white;
+    padding: 12px;
+    min-height: 120px;
+    position: relative;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .calendario-dia {
+    background: #2D333B;
+}
+
+.calendario-dia:hover {
+    background: rgba(0, 102, 204, 0.05);
+    transform: translateY(-2px);
+    z-index: 1;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.calendario-dia.nombre-dia {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    font-weight: 600;
+    padding: 12px;
+    min-height: auto;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.calendario-dia.otro-mes {
+    background: var(--light);
+    color: var(--gray);
+    opacity: 0.6;
+}
+
+.calendario-dia.hoy {
+    background: rgba(0, 102, 204, 0.15);
+    border: 2px solid var(--primary);
+}
+
+.calendario-dia-numero {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--dark);
+    font-size: 1.1rem;
+}
+
+.calendario-eventos {
+    margin-top: 8px;
+}
+
+.calendario-evento {
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    background: rgba(0, 102, 204, 0.1);
+    color: var(--primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.calendario-evento i {
+    font-size: 6px;
+}
+
+.calendario-evento.evento-alta {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--danger);
+}
+
+.calendario-evento.evento-media {
+    background: rgba(255, 152, 0, 0.1);
+    color: var(--warning);
+}
+
+.calendario-evento.evento-baja {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--success);
+}
+
+.calendario-mas-eventos {
+    font-size: 0.7rem;
+    color: var(--gray);
+    text-align: center;
+    padding: 2px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 3px;
+    margin-top: 4px;
+}
+
+/* ===== TEMA DE ALTO CONTRASTE PARA ACCESIBILIDAD ===== */
+[data-theme="high-contrast"] {
+    --primary: #0000FF;
+    --primary-dark: #0000CC;
+    --secondary: #FF6600;
+    --success: #008000;
+    --danger: #FF0000;
+    --warning: #FFAA00;
+    --info: #008080;
+    --light: #FFFFFF;
+    --dark: #000000;
+    --gray: #404040;
+    --border: #000000;
+    --shadow: 0 0 0 2px #000000;
+}
+
+[data-theme="high-contrast"] * {
+    border-color: #000000 !important;
+}
+
+[data-theme="high-contrast"] .btn,
+[data-theme="high-contrast"] button,
+[data-theme="high-contrast"] input,
+[data-theme="high-contrast"] select,
+[data-theme="high-contrast"] textarea {
+    border: 2px solid #000000 !important;
+}
+
+/* ===== BOTONES MEJORADOS (GORDITOS Y BRILLANTES) ===== */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: center;
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Efecto brillante al pasar el mouse */
+.btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.3), 
+        transparent);
+    transition: left 0.6s;
+}
+
+.btn:hover:before {
+    left: 100%;
+}
+
+/* Botón primario mejorado */
+.btn-primary {
+    background: linear-gradient(135deg, 
+        var(--primary) 0%, 
+        var(--primary-dark) 50%, 
+        var(--primary) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(var(--primary-rgb, 0, 102, 204), 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px 24px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(var(--primary-rgb, 0, 102, 204), 0.4),
+                0 0 20px rgba(var(--primary-rgb, 0, 102, 204), 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+/* Botón secundario mejorado */
+.btn-secondary {
+    background: linear-gradient(135deg, 
+        var(--gray) 0%, 
+        #495057 50%, 
+        var(--gray) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px 24px;
+}
+
+/* Botón éxito mejorado */
+.btn-success {
+    background: linear-gradient(135deg, 
+        var(--success) 0%, 
+        #1E7E34 50%, 
+        var(--success) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px 24px;
+}
+
+/* Botón peligro mejorado */
+.btn-danger {
+    background: linear-gradient(135deg, 
+        var(--danger) 0%, 
+        #BD2130 50%, 
+        var(--danger) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px 24px;
+}
+
+/* Botón con efecto neón (para acciones importantes) */
+.btn-neon {
+    background: linear-gradient(135deg, 
+        var(--primary) 0%, 
+        #4DABF7 50%, 
+        var(--primary) 100%);
+    color: white;
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 15px var(--primary),
+                0 0 30px rgba(var(--primary-rgb, 0, 102, 204), 0.5),
+                0 0 45px rgba(var(--primary-rgb, 0, 102, 204), 0.3);
+    animation: neon-pulse 2s infinite;
+    border-radius: 12px;
+    padding: 12px 24px;
+}
+
+@keyframes neon-pulse {
+    0%, 100% {
+        box-shadow: 0 0 15px var(--primary),
+                    0 0 30px rgba(var(--primary-rgb, 0, 102, 204), 0.5),
+                    0 0 45px rgba(var(--primary-rgb, 0, 102, 204), 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--primary),
+                    0 0 40px rgba(var(--primary-rgb, 0, 102, 204), 0.7),
+                    0 0 60px rgba(var(--primary-rgb, 0, 102, 204), 0.5);
+    }
+}
+
+/* Botón con efecto 3D */
+.btn-3d {
+    background: linear-gradient(to bottom, 
+        var(--primary) 0%, 
+        var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-bottom: 6px solid var(--primary-dark);
+    border-radius: 12px;
+    text-shadow: 0 -1px 0 var(--primary-dark);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),
+                0 6px 0 var(--primary-dark),
+                0 8px 10px rgba(0,0,0,0.4);
+    padding: 12px 24px;
+}
+
+.btn-3d:hover {
+    transform: translateY(4px);
+    border-bottom-width: 2px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),
+                0 2px 0 var(--primary-dark),
+                0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Selector de temas en el header */
+.theme-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.theme-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--light);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 8px;
+    display: none;
+    min-width: 160px;
+    z-index: 1000;
+    border: 1px solid var(--border);
+}
+
+.theme-selector:hover .theme-menu {
+    display: block;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: var(--dark);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.theme-option:hover {
+    background: rgba(0, 102, 204, 0.1);
+}
+
+.theme-option i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Botón de tema en header */
+#themeToggle {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+#themeToggle:hover {
+    transform: rotate(30deg);
+    background: var(--primary-dark);
+}
+
         /* ===== END OF STYLES ===== */
     </style>
 </head>
@@ -3645,9 +4126,22 @@
                     <button class="btn-icon"><i class="fas fa-search"></i></button>
                 </div>
                 
-                <button id="themeToggle" class="btn-icon" title="Cambiar tema">
-                    <i class="fas fa-moon"></i>
-                </button>
+                <div class="theme-selector">
+                    <button id="themeToggle" class="btn-icon" title="Cambiar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="theme-menu">
+                        <button class="theme-option" data-theme="light">
+                            <i class="fas fa-sun"></i> Tema Claro
+                        </button>
+                        <button class="theme-option" data-theme="dark">
+                            <i class="fas fa-moon"></i> Tema Oscuro
+                        </button>
+                        <button class="theme-option" data-theme="high-contrast">
+                            <i class="fas fa-eye"></i> Alto Contraste
+                        </button>
+                    </div>
+                </div>
                 
                 <div class="notification-bell">
                     <button class="btn-icon" id="notificationsBtn">
@@ -4230,6 +4724,62 @@
                     <h3>SharePoint DRTE</h3>
                     <p>Intranet y documentos DRTE</p>
                 </a>
+
+                <!-- NUEVOS ENLACES ADICIONALES -->
+    
+                <!-- YouTube -->
+                <a href="https://www.youtube.com" target="_blank" class="enlace-card hover-lift">
+                    <div class="enlace-icon" style="color: #FF0000;">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    <h3>YouTube</h3>
+                    <p>Investigación y recursos educativos</p>
+                </a>
+                
+                <!-- Correo MEP -->
+                <a href="https://outlook.office365.com/mail/" target="_blank" class="enlace-card hover-lift">
+                    <div class="enlace-icon" style="color: #0078D4;">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Correo MEP</h3>
+                    <p>Correo institucional Office 365</p>
+                </a>
+                
+                <!-- Microsoft Teams -->
+                <a href="https://teams.microsoft.com" target="_blank" class="enlace-card hover-lift">
+                    <div class="enlace-icon" style="color: #6264A7;">
+                        <i class="fab fa-microsoft"></i>
+                    </div>
+                    <h3>Microsoft Teams</h3>
+                    <p>Colaboración y reuniones virtuales</p>
+                </a>
+                
+                <!-- OneNote -->
+                <a href="https://m365.cloud.microsoft/launch/onenote?auth=2" target="_blank" class="enlace-card hover-lift">
+                    <div class="enlace-icon" style="color: #7719AA;">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <h3>OneNote</h3>
+                    <p>Notas digitales y organización</p>
+                </a>
+                
+                <!-- Symbaloo -->
+                <a href="https://www.symbaloo.com/home/mix/13eP7Bh97Y" target="_blank" class="enlace-card hover-lift">
+                    <div class="enlace-icon" style="color: #00B0F0;">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <h3>Symbaloo</h3>
+                    <p>Organizador de recursos web</p>
+                </a>
+                
+                <!-- Copilot -->
+                <a href="https://m365.cloud.microsoft/chat/?auth=2&home=1" target="_blank" class="enlace-card hover-lift">
+                    <div class="enlace-icon" style="color: #10B981;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Microsoft Copilot</h3>
+                    <p>Asistente de IA para productividad</p>
+                </a>
             </div>
             
             <div class="recent-activity">
@@ -4437,6 +4987,27 @@
                 configurarAtajosTeclado();
                 iniciarRespaldoAutomatico();
                 verificarRecordatorios();
+                
+                // Inicializar calendario
+                calendario = new CalendarioDRTE();
+                await calendario.inicializar();
+                
+                // Configurar eventos de tema
+                document.querySelectorAll('.theme-option').forEach(boton => {
+                    boton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const tema = boton.dataset.theme;
+                        cambiarTema(tema);
+                    });
+                });
+                
+                // Cerrar menú de temas al hacer clic fuera
+                document.addEventListener('click', () => {
+                    const themeMenu = document.querySelector('.theme-menu');
+                    if (themeMenu) {
+                        themeMenu.style.display = 'none';
+                    }
+                });
                 
                 mostrarNotificacion('Sistema inicializado correctamente', 'success');
             } catch (error) {
@@ -5680,6 +6251,403 @@
             // Implementar descarga de archivo
             mostrarNotificacion('Descarga iniciada', 'info');
         };
+
+        // ===== CALENDARIO FUNCIONAL =====
+        let calendario;
+        
+        class CalendarioDRTE {
+            constructor() {
+                this.fechaActual = new Date();
+                this.vistaActual = 'mes';
+                this.eventos = [];
+            }
+        
+            async inicializar() {
+                await this.cargarEventos();
+                this.renderizarCalendario();
+                this.configurarEventos();
+                console.log('Calendario inicializado');
+            }
+        
+            async cargarEventos() {
+                try {
+                    this.eventos = await obtenerTodosLosEventos();
+                } catch (error) {
+                    console.error('Error cargando eventos:', error);
+                    this.eventos = [];
+                }
+            }
+        
+            renderizarCalendario() {
+                const grid = document.getElementById('calendarioGrid');
+                const mesActual = document.getElementById('mesActual');
+                
+                if (!grid || !mesActual) return;
+                
+                // Actualizar título del mes
+                const opciones = { year: 'numeric', month: 'long' };
+                mesActual.textContent = this.fechaActual.toLocaleDateString('es-ES', opciones);
+                
+                // Limpiar grid
+                grid.innerHTML = '';
+                
+                // Días de la semana
+                const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+                diasSemana.forEach(dia => {
+                    const diaElement = document.createElement('div');
+                    diaElement.className = 'calendario-dia nombre-dia';
+                    diaElement.textContent = dia;
+                    grid.appendChild(diaElement);
+                });
+                
+                // Obtener primer y último día del mes
+                const primerDia = new Date(this.fechaActual.getFullYear(), this.fechaActual.getMonth(), 1);
+                const ultimoDia = new Date(this.fechaActual.getFullYear(), this.fechaActual.getMonth() + 1, 0);
+                
+                // Días del mes anterior
+                const diaSemanaPrimerDia = primerDia.getDay();
+                for (let i = 0; i < diaSemanaPrimerDia; i++) {
+                    const fecha = new Date(primerDia);
+                    fecha.setDate(fecha.getDate() - (diaSemanaPrimerDia - i));
+                    this.crearDiaCalendario(grid, fecha, true);
+                }
+                
+                // Días del mes actual
+                for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+                    const fecha = new Date(this.fechaActual.getFullYear(), this.fechaActual.getMonth(), dia);
+                    this.crearDiaCalendario(grid, fecha, false);
+                }
+                
+                // Días del mes siguiente
+                const celdasUsadas = diaSemanaPrimerDia + ultimoDia.getDate();
+                const celdasRestantes = 42 - celdasUsadas; // 6 semanas
+                
+                for (let i = 1; i <= celdasRestantes; i++) {
+                    const fecha = new Date(ultimoDia);
+                    fecha.setDate(fecha.getDate() + i);
+                    this.crearDiaCalendario(grid, fecha, true);
+                }
+                
+                // Actualizar lista de eventos
+                this.actualizarListaEventos();
+            }
+        
+            crearDiaCalendario(contenedor, fecha, esOtroMes) {
+                const diaElement = document.createElement('div');
+                diaElement.className = 'calendario-dia';
+                
+                if (esOtroMes) {
+                    diaElement.classList.add('otro-mes');
+                }
+                
+                // Marcar hoy
+                const hoy = new Date();
+                if (fecha.toDateString() === hoy.toDateString()) {
+                    diaElement.classList.add('hoy');
+                }
+                
+                // Número del día
+                const numeroElement = document.createElement('div');
+                numeroElement.className = 'calendario-dia-numero';
+                numeroElement.textContent = fecha.getDate();
+                diaElement.appendChild(numeroElement);
+                
+                // Eventos del día
+                const eventosDia = this.obtenerEventosDia(fecha);
+                if (eventosDia.length > 0) {
+                    const eventosContainer = document.createElement('div');
+                    eventosContainer.className = 'calendario-eventos';
+                    
+                    eventosDia.slice(0, 2).forEach(evento => {
+                        const eventoElement = document.createElement('div');
+                        eventoElement.className = `calendario-evento evento-${evento.prioridad || 'normal'}`;
+                        eventoElement.title = evento.titulo;
+                        eventoElement.innerHTML = `<i class="fas fa-circle"></i> ${evento.titulo.substring(0, 10)}${evento.titulo.length > 10 ? '...' : ''}`;
+                        eventosContainer.appendChild(eventoElement);
+                    });
+                    
+                    if (eventosDia.length > 2) {
+                        const masElement = document.createElement('div');
+                        masElement.className = 'calendario-mas-eventos';
+                        masElement.textContent = `+${eventosDia.length - 2} más`;
+                        eventosContainer.appendChild(masElement);
+                    }
+                    
+                    diaElement.appendChild(eventosContainer);
+                }
+                
+                // Click en día
+                diaElement.addEventListener('click', () => {
+                    this.mostrarEventosDia(fecha, eventosDia);
+                });
+                
+                contenedor.appendChild(diaElement);
+            }
+        
+            obtenerEventosDia(fecha) {
+                return this.eventos.filter(evento => {
+                    const fechaEvento = new Date(evento.fecha);
+                    return fechaEvento.toDateString() === fecha.toDateString();
+                });
+            }
+        
+            mostrarEventosDia(fecha, eventos) {
+                let mensaje = `<strong>${fecha.toLocaleDateString('es-ES', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                })}</strong><br><br>`;
+                
+                if (eventos.length === 0) {
+                    mensaje += '<p>No hay eventos programados para este día.</p>';
+                    if (confirm('¿Desea agregar un evento para este día?')) {
+                        this.agregarEvento(fecha);
+                    }
+                } else {
+                    eventos.forEach(evento => {
+                        const hora = evento.hora ? ` (${evento.hora})` : '';
+                        mensaje += `• <strong>${evento.titulo}</strong>${hora}<br>`;
+                        if (evento.descripcion) {
+                            mensaje += `  <small>${evento.descripcion}</small><br>`;
+                        }
+                        mensaje += '<br>';
+                    });
+                }
+                
+                this.mostrarModal('Eventos del día', mensaje);
+            }
+        
+            mostrarModal(titulo, mensaje) {
+                const modal = document.getElementById('infoModal');
+                const tituloElement = modal.querySelector('h3');
+                const mensajeElement = document.getElementById('infoMessage');
+                
+                tituloElement.innerHTML = `<i class="fas fa-calendar-day"></i> ${titulo}`;
+                mensajeElement.innerHTML = mensaje;
+                modal.classList.add('active');
+            }
+        
+            async agregarEvento(fecha) {
+                const titulo = prompt('Título del evento:');
+                if (!titulo) return;
+                
+                const descripcion = prompt('Descripción (opcional):');
+                const hora = prompt('Hora (opcional, formato HH:MM):');
+                const prioridad = prompt('Prioridad (alta/media/baja, opcional):') || 'media';
+                
+                const nuevoEvento = {
+                    titulo: titulo,
+                    descripcion: descripcion || '',
+                    fecha: fecha.toISOString(),
+                    hora: hora || '',
+                    prioridad: prioridad,
+                    fechaCreacion: new Date().toISOString()
+                };
+                
+                try {
+                    await this.guardarEvento(nuevoEvento);
+                    this.eventos.push(nuevoEvento);
+                    this.renderizarCalendario();
+                    mostrarNotificacion('Evento agregado correctamente', 'success');
+                } catch (error) {
+                    console.error('Error guardando evento:', error);
+                    mostrarNotificacion('Error al guardar evento', 'error');
+                }
+            }
+        
+            async guardarEvento(evento) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(['eventos'], 'readwrite');
+                    const store = transaction.objectStore('eventos');
+                    const request = store.add(evento);
+                    
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+        
+            actualizarListaEventos() {
+                const contenedor = document.getElementById('listaEventos');
+                if (!contenedor) return;
+                
+                // Eventos del mes actual
+                const primerDiaMes = new Date(this.fechaActual.getFullYear(), this.fechaActual.getMonth(), 1);
+                const ultimoDiaMes = new Date(this.fechaActual.getFullYear(), this.fechaActual.getMonth() + 1, 0);
+                
+                const eventosMes = this.eventos.filter(evento => {
+                    const fechaEvento = new Date(evento.fecha);
+                    return fechaEvento >= primerDiaMes && fechaEvento <= ultimoDiaMes;
+                }).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                
+                if (eventosMes.length === 0) {
+                    contenedor.innerHTML = '<p class="empty-state"><i class="fas fa-calendar"></i> No hay eventos este mes</p>';
+                    return;
+                }
+                
+                let html = '';
+                eventosMes.forEach(evento => {
+                    const fecha = new Date(evento.fecha);
+                    const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short'
+                    });
+                    
+                    html += `
+                        <div class="activity-item">
+                            <div class="activity-icon evento-${evento.prioridad || 'normal'}">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                            <div>
+                                <p><strong>${evento.titulo}</strong></p>
+                                <small>${fechaFormateada} ${evento.hora ? '• ' + evento.hora : ''}</small>
+                                ${evento.descripcion ? `<p class="text-small">${evento.descripcion}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                contenedor.innerHTML = html;
+            }
+        
+            cambiarMes(direccion) {
+                this.fechaActual.setMonth(this.fechaActual.getMonth() + direccion);
+                this.renderizarCalendario();
+            }
+        
+            irHoy() {
+                this.fechaActual = new Date();
+                this.renderizarCalendario();
+            }
+        
+            cambiarVista(vista) {
+                this.vistaActual = vista;
+                // Por ahora solo implementamos vista mensual
+                mostrarNotificacion(`Vista ${vista} en desarrollo`, 'info');
+            }
+        
+            configurarEventos() {
+                // Navegación de meses
+                document.getElementById('mesAnterior')?.addEventListener('click', () => this.cambiarMes(-1));
+                document.getElementById('mesSiguiente')?.addEventListener('click', () => this.cambiarMes(1));
+                document.getElementById('hoy')?.addEventListener('click', () => this.irHoy());
+                
+                // Botones de vista
+                document.getElementById('vistaDia')?.addEventListener('click', (e) => {
+                    e.target.classList.add('active');
+                    document.getElementById('vistaSemana')?.classList.remove('active');
+                    document.getElementById('vistaMes')?.classList.remove('active');
+                    this.cambiarVista('dia');
+                });
+                
+                document.getElementById('vistaSemana')?.addEventListener('click', (e) => {
+                    e.target.classList.add('active');
+                    document.getElementById('vistaDia')?.classList.remove('active');
+                    document.getElementById('vistaMes')?.classList.remove('active');
+                    this.cambiarVista('semana');
+                });
+                
+                document.getElementById('vistaMes')?.addEventListener('click', (e) => {
+                    e.target.classList.add('active');
+                    document.getElementById('vistaDia')?.classList.remove('active');
+                    document.getElementById('vistaSemana')?.classList.remove('active');
+                    this.cambiarVista('mes');
+                });
+                
+                // Botón nuevo evento
+                document.getElementById('nuevoEvento')?.addEventListener('click', () => {
+                    this.agregarEvento(new Date());
+                });
+            }
+        }
+        
+        // ===== SISTEMA DE TEMAS MEJORADO =====
+        function cambiarTema(tema) {
+            document.body.dataset.theme = tema;
+            configuracion.tema = tema;
+            
+            const iconoTema = document.querySelector('#themeToggle i');
+            const iconos = {
+                'light': 'fas fa-sun',
+                'dark': 'fas fa-moon',
+                'high-contrast': 'fas fa-eye'
+            };
+            iconoTema.className = iconos[tema] || 'fas fa-moon';
+            
+            // Guardar configuración
+            localStorage.setItem('configuracionDRTE', JSON.stringify(configuracion));
+            
+            // Mostrar notificación
+            const nombresTema = {
+                'light': 'Claro',
+                'dark': 'Oscuro',
+                'high-contrast': 'Alto Contraste'
+            };
+            mostrarNotificacion(`Tema cambiado a: ${nombresTema[tema]}`, 'info');
+        }
+        
+        // Alternar tema cíclicamente
+        function alternarTema() {
+            const temas = ['light', 'dark', 'high-contrast'];
+            const temaActual = document.body.dataset.theme || 'light';
+            const indiceActual = temas.indexOf(temaActual);
+            const siguienteTema = temas[(indiceActual + 1) % temas.length];
+            
+            cambiarTema(siguienteTema);
+        }
+        
+        // Función para aplicar tema al cargar
+        function aplicarTema() {
+            const tema = configuracion.tema || 'light';
+            document.body.dataset.theme = tema;
+            
+            const iconoTema = document.querySelector('#themeToggle i');
+            const iconos = {
+                'light': 'fas fa-sun',
+                'dark': 'fas fa-moon',
+                'high-contrast': 'fas fa-eye'
+            };
+            iconoTema.className = iconos[tema] || 'fas fa-moon';
+        }
+        
+        // Hacer calendario disponible globalmente
+        window.calendario = calendario;
+        
+        // ===== INICIALIZACIÓN MEJORADA =====
+        async function inicializarSistema() {
+            try {
+                await inicializarBaseDatos();
+                cargarConfiguracion();
+                aplicarTema();
+                configurarAtajosTeclado();
+                iniciarRespaldoAutomatico();
+                verificarRecordatorios();
+                
+                // Inicializar calendario
+                calendario = new CalendarioDRTE();
+                await calendario.inicializar();
+                
+                // Configurar eventos de tema
+                document.querySelectorAll('.theme-option').forEach(boton => {
+                    boton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const tema = boton.dataset.theme;
+                        cambiarTema(tema);
+                    });
+                });
+                
+                // Cerrar menú de temas al hacer clic fuera
+                document.addEventListener('click', () => {
+                    document.querySelector('.theme-menu').style.display = 'none';
+                });
+                
+                mostrarNotificacion('Sistema inicializado correctamente', 'success');
+            } catch (error) {
+                console.error('Error inicializando sistema:', error);
+                mostrarNotificacion('Error al inicializar el sistema', 'error');
+            }
+        }
 
         console.log('Sistema DRTE MEP - Versión 1.0.0');
         console.log('Todos los sistemas inicializados correctamente');
