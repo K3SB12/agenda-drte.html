@@ -4052,6 +4052,31 @@
     background: var(--primary-dark);
 }
 
+/* ===== FIX PARA CALENDARIO ===== */
+.calendario-dia.otro-mes {
+    opacity: 1 !important; /* Cambiar de 0.6 a 1 */
+    background: rgba(0, 102, 204, 0.05) !important;
+    color: var(--gray) !important;
+}
+
+.calendario-grid {
+    min-height: 500px !important;
+    grid-template-rows: auto repeat(6, 1fr) !important;
+}
+
+.calendario-dia {
+    min-height: 80px !important;
+}
+
+.calendario-dia.hoy {
+    border: 2px solid var(--primary) !important;
+    background: rgba(0, 102, 204, 0.1) !important;
+}
+
+.calendario-container {
+    min-height: 600px !important;
+}
+
         /* ===== END OF STYLES ===== */
     </style>
 </head>
@@ -4470,6 +4495,11 @@
             
             <div class="calendario-container">
                 <div class="calendario-header">
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="mostrarCalendario()" class="btn-primary">
+                            <i class="fas fa-redo"></i> Forzar Renderizado de Calendario
+                        </button>
+                    </div>
                     <div>
                         <button id="mesAnterior" class="btn-icon"><i class="fas fa-chevron-left"></i></button>
                         <h3 id="mesActual">Enero 2024</h3>
@@ -6251,6 +6281,31 @@
             // Si es dashboard, actualizar datos
             if (sectionId === 'dashboard') {
                 actualizarDashboard();
+            }
+        }
+            if (sectionId === 'calendario') {
+                setTimeout(() => {
+                    mostrarCalendario();
+                }, 100);
+            }
+        }
+
+        function mostrarCalendario() {
+            if (calendario) {
+                calendario.renderizarCalendario();
+                // Asegurar que la sección de calendario esté visible
+                document.getElementById('calendario').classList.add('active');
+                document.querySelector('[href="#calendario"]').classList.add('active');
+                
+                // Forzar un reflow para asegurar que los estilos se apliquen
+                setTimeout(() => {
+                    const grid = document.getElementById('calendarioGrid');
+                    if (grid) {
+                        grid.style.display = 'none';
+                        grid.offsetHeight; // Trigger reflow
+                        grid.style.display = 'grid';
+                    }
+                }, 50);
             }
         }
 
