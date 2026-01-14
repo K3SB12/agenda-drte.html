@@ -6343,22 +6343,16 @@
             
             // ===== NUEVO: Si es calendario, renderizarlo =====
             if (sectionId === 'calendario' && calendario) {
-                setTimeout(() => {
-                    calendario.renderizarCalendario();
-                }, 100); // Pequeño delay para asegurar que el DOM esté listo
-            }
-            
-            // Si es dashboard, actualizar datos
-            if (sectionId === 'dashboard') {
-                actualizarDashboard();
-            }
-        }
-            if (sectionId === 'calendario') {
-                setTimeout(() => {
-                    mostrarCalendario();
-                }, 100);
-            }
-        }
+                    setTimeout(() => {
+                        calendario.renderizarCalendario();
+                    }, 100); // Pequeño delay para asegurar que el DOM esté listo
+                }
+                
+                // Si es dashboard, actualizar datos
+                if (sectionId === 'dashboard') {
+                    actualizarDashboard();
+                }
+            } 
 
         function mostrarCalendario() {
             if (calendario) {
