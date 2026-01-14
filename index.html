@@ -6,7 +6,7 @@
     <title>Sistema Integral DRTE MEP - Gestión de Evidencias y Agenda</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAACjSURBVHgB7dKxDYAwDETRG4CCEVggJqBgBBagYAMkpOllc05kI+7hVvT9l5QADeABHMAN2FipFZC4AB1QsgA2uAEfD2YzAZgqQDGAqgC+J0BX3IEyYQXIM5gLqAbQ/x5CMJMyg/0OpoOYNQFZ9xVgkAHkNWkZAXhHgOgTQQeQ3hAzAVQAVAVQHoBvB5QBiJnAPgNRBEhPwJ+APQFyE4gz+BeAj7uY2wAAAABJRU5ErkJggg==">
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAACjSURBVHgB7dKxDYAwDETRG4CCEVggJqBgBBagYAMkpOllc05kI+7hVvT9l5QADeABHMAN2FipFZC4AB1QsgA2uAEfD2YzAZgqQDGAqgC+J0BX3IEyYQXIM5gLqAbQ/x5CMJMyg/0OpoOYNQFZ9xVgkAHkNWkZAThHgOgTQQeQ3hAzAVQAVAVQHoBvB5QBiJnAPgNRBEhPwJ+APQFyE4gz+BeAj7uY2wAAAABJRU5ErkJggg==">
     <style>
         /* ===== RESET Y BASE ===== */
         * {
@@ -517,7 +517,7 @@
             border-top: 1px solid var(--border);
         }
 
-               /* ===== CALENDARIO MEJORADO ===== */
+        /* ===== CALENDARIO MEJORADO ===== */
         .calendario-container {
             background: white;
             border-radius: 12px;
@@ -5068,7 +5068,30 @@
         let tareas = [];
         let eventos = [];
         let bitacoras = [];
-        let calendario = null; // ← AGREGAR ESTA LÍNEA
+        let calendario = null;
+
+        // ===== FUNCIÓN PARA MOSTRAR EL CALENDARIO =====
+        function mostrarCalendario() {
+            if (calendario) {
+                calendario.renderizarCalendario();
+                // Asegurar que la sección de calendario esté visible
+                document.getElementById('calendario').classList.add('active');
+                document.querySelector('[href="#calendario"]').classList.add('active');
+                
+                // Forzar un reflow para asegurar que los estilos se apliquen
+                setTimeout(() => {
+                    const grid = document.getElementById('calendarioGrid');
+                    if (grid) {
+                        grid.style.display = 'none';
+                        grid.offsetHeight; // Trigger reflow
+                        grid.style.display = 'grid';
+                    }
+                }, 50);
+            } else {
+                console.error('Calendario no está inicializado');
+                mostrarNotificacion('Error: Calendario no está disponible', 'error');
+            }
+        }
 
         // ===== INICIALIZACIÓN =====
         document.addEventListener('DOMContentLoaded', function() {
@@ -5116,18 +5139,6 @@
                 console.error('Error inicializando sistema:', error);
                 mostrarNotificacion('Error al inicializar el sistema', 'error');
             }
-        }
-
-        // Agregar esta función con las otras funciones de base de datos
-        async function obtenerTodosLosEventos() {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['eventos'], 'readonly');
-                const store = transaction.objectStore('eventos');
-                const request = store.getAll();
-                
-                request.onsuccess = () => resolve(request.result || []);
-                request.onerror = () => reject(request.error);
-            });
         }
 
         // ===== CALENDARIO FUNCIONAL =====
@@ -5435,6 +5446,18 @@
                     this.agregarEvento(new Date());
                 });
             }
+        }
+
+        // Agregar esta función con las otras funciones de base de datos
+        async function obtenerTodosLosEventos() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['eventos'], 'readonly');
+                const store = transaction.objectStore('eventos');
+                const request = store.getAll();
+                
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => reject(request.error);
+            });
         }
 
         // ===== SISTEMA DE TEMAS MEJORADO =====
@@ -6158,6 +6181,56 @@
             });
         }
 
+        // ===== NAVEGACIÓN =====
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remover activo de todos los enlaces
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Activar enlace correspondiente
+            document.querySelector(`[href="#${sectionId}"]`).classList.add('active');
+            
+            // Actualizar título si es necesario
+            actualizarTituloSeccion(sectionId);
+            
+            // ===== NUEVO: Si es calendario, renderizarlo =====
+            if (sectionId === 'calendario' && calendario) {
+                setTimeout(() => {
+                    calendario.renderizarCalendario();
+                }, 100); // Pequeño delay para asegurar que el DOM esté listo
+            }
+            
+            // Si es dashboard, actualizar datos
+            if (sectionId === 'dashboard') {
+                actualizarDashboard();
+            }
+        }
+
+        function actualizarTituloSeccion(sectionId) {
+            const titulos = {
+                'dashboard': 'Dashboard',
+                'bitacora': 'Bitácora Diaria',
+                'tareas': 'Gestión de Tareas',
+                'calendario': 'Calendario',
+                'archivos': 'Sistema de Archivos',
+                'informes': 'Informes Institucionales',
+                'enlaces': 'Enlaces MEP',
+                'config': 'Sistema y Configuración'
+            };
+            
+            const titulo = titulos[sectionId] || 'Sistema DRTE MEP';
+            document.title = `${titulo} - Sistema DRTE MEP`;
+        }
+
         // ===== CARGA DE DATOS =====
         async function cargarDatosIniciales() {
             try {
@@ -6178,6 +6251,40 @@
             } catch (error) {
                 console.error('Error cargando datos iniciales:', error);
             }
+        }
+
+        // ===== FUNCIONES DE BASE DE DATOS =====
+        async function obtenerTodasLasTareas() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['tareas'], 'readonly');
+                const store = transaction.objectStore('tareas');
+                const request = store.getAll();
+                
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function obtenerTodasLasBitacoras() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['bitacoras'], 'readonly');
+                const store = transaction.objectStore('bitacoras');
+                const request = store.getAll();
+                
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function obtenerTodosLosArchivos() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['archivos'], 'readonly');
+                const store = transaction.objectStore('archivos');
+                const request = store.getAll();
+                
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => reject(request.error);
+            });
         }
 
         // ===== DASHBOARD =====
@@ -6298,15 +6405,6 @@
             document.getElementById('incluirLogo').checked = true;
         }
 
-        // ===== TEMA =====
-        function aplicarTema() {
-            const tema = configuracion.tema || 'light';
-            document.body.dataset.theme = tema;
-            
-            const iconoTema = document.querySelector('#themeToggle i');
-            iconoTema.className = tema === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-
         function alternarTema() {
             const temaActual = document.body.dataset.theme;
             const nuevoTema = temaActual === 'dark' ? 'light' : 'dark';
@@ -6320,118 +6418,151 @@
             guardarConfiguracion();
         }
 
-        // ===== NAVEGACIÓN =====
-        function showSection(sectionId) {
-            // Ocultar todas las secciones
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
+        // ===== ESTADO DEL SISTEMA =====
+        function actualizarEstadoSistema() {
+            // Estado de la base de datos
+            document.getElementById('estadoDB').textContent = db ? 'Activa' : 'Inactiva';
             
-            // Remover activo de todos los enlaces
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
+            // Uso de almacenamiento
+            if ('storage' in navigator && 'estimate' in navigator.storage) {
+                navigator.storage.estimate().then(estimate => {
+                    const porcentaje = estimate.quota ? (estimate.usage / estimate.quota * 100).toFixed(1) : 0;
+                    document.getElementById('usoAlmacenamiento').textContent = `${porcentaje}%`;
+                });
+            }
             
-            // Mostrar sección seleccionada
-            document.getElementById(sectionId).classList.add('active');
+            // Uso de memoria
+            if (performance.memory) {
+                const memory = performance.memory;
+                const usedMB = Math.round(memory.usedJSHeapSize / 1024 / 1024);
+                document.getElementById('usoMemoria').textContent = `${usedMB} MB`;
+            }
             
-            // Activar enlace correspondiente
-            document.querySelector(`[href="#${sectionId}"]`).classList.add('active');
-            
-            // Actualizar título si es necesario
-            actualizarTituloSeccion(sectionId);
-            
-            // ===== NUEVO: Si es calendario, renderizarlo =====
-            if (sectionId === 'calendario' && calendario) {
-                    setTimeout(() => {
-                        calendario.renderizarCalendario();
-                    }, 100); // Pequeño delay para asegurar que el DOM esté listo
-                }
-                
-                // Si es dashboard, actualizar datos
-                if (sectionId === 'dashboard') {
-                    actualizarDashboard();
-                }
-            } 
-
-        function mostrarCalendario() {
-            if (calendario) {
-                calendario.renderizarCalendario();
-                // Asegurar que la sección de calendario esté visible
-                document.getElementById('calendario').classList.add('active');
-                document.querySelector('[href="#calendario"]').classList.add('active');
-                
-                // Forzar un reflow para asegurar que los estilos se apliquen
-                setTimeout(() => {
-                    const grid = document.getElementById('calendarioGrid');
-                    if (grid) {
-                        grid.style.display = 'none';
-                        grid.offsetHeight; // Trigger reflow
-                        grid.style.display = 'grid';
-                    }
-                }, 50);
+            // Último respaldo
+            const ultimoRespaldo = localStorage.getItem('ultimoRespaldo');
+            if (ultimoRespaldo) {
+                document.getElementById('ultimoRespaldo').textContent = 
+                    new Date(ultimoRespaldo).toLocaleString();
             }
         }
 
-        function actualizarTituloSeccion(sectionId) {
-            const titulos = {
-                'dashboard': 'Dashboard',
-                'bitacora': 'Bitácora Diaria',
-                'tareas': 'Gestión de Tareas',
-                'calendario': 'Calendario',
-                'archivos': 'Sistema de Archivos',
-                'informes': 'Informes Institucionales',
-                'enlaces': 'Enlaces MEP',
-                'config': 'Sistema y Configuración'
-            };
+        function actualizarEstadisticasArchivos() {
+            // Esta función se llamará después de subir/eliminar archivos
+            const totalArchivos = archivosSubidos.length;
+            const totalPDF = archivosSubidos.filter(a => a.extension === 'pdf').length;
+            const totalWord = archivosSubidos.filter(a => ['doc', 'docx'].includes(a.extension)).length;
             
-            const titulo = titulos[sectionId] || 'Sistema DRTE MEP';
-            document.title = `${titulo} - Sistema DRTE MEP`;
+            // Calcular espacio total usado
+            const espacioUsado = archivosSubidos.reduce((total, archivo) => total + archivo.tamaño, 0);
+            
+            document.getElementById('totalArchivos').textContent = totalArchivos;
+            document.getElementById('espacioUsado').textContent = formatBytes(espacioUsado);
+            document.getElementById('totalPDF').textContent = totalPDF;
+            document.getElementById('totalWord').textContent = totalWord;
         }
 
-        // ===== FUNCIONES DE BASE DE DATOS =====
-        async function obtenerTodasLasTareas() {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['tareas'], 'readonly');
-                const store = transaction.objectStore('tareas');
-                const request = store.getAll();
+        // ===== VERIFICACIÓN DE RECORDATORIOS =====
+        function verificarRecordatorios() {
+            // Verificar cada hora
+            setInterval(() => {
+                const tareasPendientes = tareas.filter(t => 
+                    t.estado === 'pendiente' && 
+                    t.fechaVencimiento && 
+                    new Date(t.fechaVencimiento) <= new Date()
+                );
                 
-                request.onsuccess = () => resolve(request.result || []);
-                request.onerror = () => reject(request.error);
-            });
+                if (tareasPendientes.length > 0 && configuracion.notificaciones) {
+                    mostrarNotificacion(
+                        `Tiene ${tareasPendientes.length} tarea(s) vencida(s)`,
+                        'warning'
+                    );
+                }
+            }, 3600000); // Cada hora
         }
 
-        async function obtenerTodasLasBitacoras() {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['bitacoras'], 'readonly');
-                const store = transaction.objectStore('bitacoras');
-                const request = store.getAll();
-                
-                request.onsuccess = () => resolve(request.result || []);
-                request.onerror = () => reject(request.error);
-            });
+        // ===== MOSTRAR/OCULTAR LOADING =====
+        function mostrarLoading(mostrar) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (mostrar) {
+                loadingOverlay.style.display = 'flex';
+            } else {
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }
         }
 
-        async function obtenerTodosLosArchivos() {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['archivos'], 'readonly');
-                const store = transaction.objectStore('archivos');
-                const request = store.getAll();
+        // ===== EXPORTACIÓN =====
+        async function exportarInforme(tipo) {
+            mostrarProgreso(true, 'Generando informe...');
+            
+            try {
+                let contenido = '';
                 
-                request.onsuccess = () => resolve(request.result || []);
-                request.onerror = () => reject(request.error);
-            });
+                switch(tipo) {
+                    case 'mensual':
+                        contenido = await generarInformeMensual();
+                        break;
+                    case 'tareas':
+                        contenido = await generarInformeTareas();
+                        break;
+                    case 'archivos':
+                        contenido = await generarInformeArchivos();
+                        break;
+                    default:
+                        contenido = 'Informe no disponible';
+                }
+                
+                const formato = document.getElementById('formatoExportacion').value;
+                
+                switch(formato) {
+                    case 'pdf':
+                        await exportarAPDF(contenido, tipo);
+                        break;
+                    case 'excel':
+                        await exportarAExcel(contenido, tipo);
+                        break;
+                    case 'word':
+                        await exportarAWord(contenido, tipo);
+                        break;
+                }
+                
+                mostrarProgreso(false);
+                mostrarNotificacion('Informe exportado correctamente', 'success');
+            } catch (error) {
+                mostrarProgreso(false);
+                console.error('Error exportando informe:', error);
+                mostrarNotificacion('Error al exportar informe', 'error');
+            }
         }
 
-        async function obtenerTodosLosEventos() {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['eventos'], 'readonly');
-                const store = transaction.objectStore('eventos');
-                const request = store.getAll();
-                
-                request.onsuccess = () => resolve(request.result || []);
-                request.onerror = () => reject(request.error);
-            });
+        async function exportarAPDF(contenido, tipo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Encabezado
+            doc.setFontSize(16);
+            doc.setTextColor(0, 51, 102);
+            doc.text('Ministerio de Educación Pública', 105, 20, null, null, 'center');
+            doc.text('Dirección Regional de Educación', 105, 28, null, null, 'center');
+            
+            doc.setFontSize(14);
+            doc.text(`INFORME ${tipo.toUpperCase()}`, 105, 40, null, null, 'center');
+            
+            // Fecha
+            doc.setFontSize(10);
+            doc.text(`Generado: ${new Date().toLocaleString()}`, 10, 50);
+            
+            // Contenido
+            doc.setFontSize(11);
+            const lineas = doc.splitTextToSize(contenido, 180);
+            doc.text(lineas, 10, 70);
+            
+            // Pie de página
+            doc.setFontSize(8);
+            doc.text('Sistema Integral de Gestión DRTE', 105, 285, null, null, 'center');
+            
+            doc.save(`Informe_${tipo}_${Date.now()}.pdf`);
         }
 
         // ===== EVENTOS =====
@@ -6589,153 +6720,6 @@
             const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-        }
-
-        // ===== ESTADO DEL SISTEMA =====
-        function actualizarEstadoSistema() {
-            // Estado de la base de datos
-            document.getElementById('estadoDB').textContent = db ? 'Activa' : 'Inactiva';
-            
-            // Uso de almacenamiento
-            if ('storage' in navigator && 'estimate' in navigator.storage) {
-                navigator.storage.estimate().then(estimate => {
-                    const porcentaje = estimate.quota ? (estimate.usage / estimate.quota * 100).toFixed(1) : 0;
-                    document.getElementById('usoAlmacenamiento').textContent = `${porcentaje}%`;
-                });
-            }
-            
-            // Uso de memoria
-            if (performance.memory) {
-                const memory = performance.memory;
-                const usedMB = Math.round(memory.usedJSHeapSize / 1024 / 1024);
-                document.getElementById('usoMemoria').textContent = `${usedMB} MB`;
-            }
-            
-            // Último respaldo
-            const ultimoRespaldo = localStorage.getItem('ultimoRespaldo');
-            if (ultimoRespaldo) {
-                document.getElementById('ultimoRespaldo').textContent = 
-                    new Date(ultimoRespaldo).toLocaleString();
-            }
-        }
-
-        function actualizarEstadisticasArchivos() {
-            // Esta función se llamará después de subir/eliminar archivos
-            const totalArchivos = archivosSubidos.length;
-            const totalPDF = archivosSubidos.filter(a => a.extension === 'pdf').length;
-            const totalWord = archivosSubidos.filter(a => ['doc', 'docx'].includes(a.extension)).length;
-            
-            // Calcular espacio total usado
-            const espacioUsado = archivosSubidos.reduce((total, archivo) => total + archivo.tamaño, 0);
-            
-            document.getElementById('totalArchivos').textContent = totalArchivos;
-            document.getElementById('espacioUsado').textContent = formatBytes(espacioUsado);
-            document.getElementById('totalPDF').textContent = totalPDF;
-            document.getElementById('totalWord').textContent = totalWord;
-        }
-
-        // ===== VERIFICACIÓN DE RECORDATORIOS =====
-        function verificarRecordatorios() {
-            // Verificar cada hora
-            setInterval(() => {
-                const tareasPendientes = tareas.filter(t => 
-                    t.estado === 'pendiente' && 
-                    t.fechaVencimiento && 
-                    new Date(t.fechaVencimiento) <= new Date()
-                );
-                
-                if (tareasPendientes.length > 0 && configuracion.notificaciones) {
-                    mostrarNotificacion(
-                        `Tiene ${tareasPendientes.length} tarea(s) vencida(s)`,
-                        'warning'
-                    );
-                }
-            }, 3600000); // Cada hora
-        }
-
-        // ===== MOSTRAR/OCULTAR LOADING =====
-        function mostrarLoading(mostrar) {
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            if (mostrar) {
-                loadingOverlay.style.display = 'flex';
-            } else {
-                setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                }, 500);
-            }
-        }
-
-        // ===== EXPORTACIÓN =====
-        async function exportarInforme(tipo) {
-            mostrarProgreso(true, 'Generando informe...');
-            
-            try {
-                let contenido = '';
-                
-                switch(tipo) {
-                    case 'mensual':
-                        contenido = await generarInformeMensual();
-                        break;
-                    case 'tareas':
-                        contenido = await generarInformeTareas();
-                        break;
-                    case 'archivos':
-                        contenido = await generarInformeArchivos();
-                        break;
-                    default:
-                        contenido = 'Informe no disponible';
-                }
-                
-                const formato = document.getElementById('formatoExportacion').value;
-                
-                switch(formato) {
-                    case 'pdf':
-                        await exportarAPDF(contenido, tipo);
-                        break;
-                    case 'excel':
-                        await exportarAExcel(contenido, tipo);
-                        break;
-                    case 'word':
-                        await exportarAWord(contenido, tipo);
-                        break;
-                }
-                
-                mostrarProgreso(false);
-                mostrarNotificacion('Informe exportado correctamente', 'success');
-            } catch (error) {
-                mostrarProgreso(false);
-                console.error('Error exportando informe:', error);
-                mostrarNotificacion('Error al exportar informe', 'error');
-            }
-        }
-
-        async function exportarAPDF(contenido, tipo) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Encabezado
-            doc.setFontSize(16);
-            doc.setTextColor(0, 51, 102);
-            doc.text('Ministerio de Educación Pública', 105, 20, null, null, 'center');
-            doc.text('Dirección Regional de Educación', 105, 28, null, null, 'center');
-            
-            doc.setFontSize(14);
-            doc.text(`INFORME ${tipo.toUpperCase()}`, 105, 40, null, null, 'center');
-            
-            // Fecha
-            doc.setFontSize(10);
-            doc.text(`Generado: ${new Date().toLocaleString()}`, 10, 50);
-            
-            // Contenido
-            doc.setFontSize(11);
-            const lineas = doc.splitTextToSize(contenido, 180);
-            doc.text(lineas, 10, 70);
-            
-            // Pie de página
-            doc.setFontSize(8);
-            doc.text('Sistema Integral de Gestión DRTE', 105, 285, null, null, 'center');
-            
-            doc.save(`Informe_${tipo}_${Date.now()}.pdf`);
         }
 
         // ===== INICIALIZACIÓN FINAL =====
