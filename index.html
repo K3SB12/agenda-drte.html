@@ -3,439 +3,2109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Integral DRTE MEP - Mejorado</title>
+    <title>Sistema Integral DRTE MEP v2.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        /* TODO EL CSS CONSOLIDADO AQUÍ (SE OMITE POR EXTENSIDAD EN ESTA RESPUESTA) */
-        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --light: #ecf0f1; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; }
-        .sidebar { background: linear-gradient(180deg, var(--primary) 0%, #1a252f 100%); color: white; min-height: 100vh; }
-        .nav-link { color: #bdc3c7 !important; border-left: 4px solid transparent; }
-        .nav-link.active, .nav-link:hover { color: white !important; border-left-color: var(--secondary); background-color: rgba(52, 152, 219, 0.1); }
-        .card { border-radius: 10px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s; margin-bottom: 1.5rem; }
-        .card:hover { transform: translateY(-5px); }
-        .stat-card { text-align: center; padding: 1.5rem; }
-        .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
-        .badge-priority-alta { background-color: #e74c3c; } .badge-priority-media { background-color: #f39c12; } .badge-priority-baja { background-color: #27ae60; }
-        #notifications { position: fixed; top: 20px; right: 20px; z-index: 9999; }
-        .notification { background-color: white; border-left: 5px solid var(--secondary); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .chat-message-ai { background-color: #e3f2fd; border-radius: 15px 15px 15px 3px; }
-        .chat-message-user { background-color: #007bff; color: white; border-radius: 15px 15px 3px 15px; }
-        /* ... (Resto de estilos consolidados del sistema) ... */
+        /* ESTILOS PRINCIPALES - DISEÑO PROFESIONAL */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #2980b9;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --card-bg: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* LAYOUT PRINCIPAL */
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 70px 1fr;
+            min-height: 100vh;
+            backdrop-filter: blur(10px);
+        }
+
+        /* HEADER */
+        .header {
+            grid-column: 1 / -1;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--glass-border);
+            padding: 2rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            padding: 1.5rem 1.5rem 0.5rem;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary);
+            border-left-color: var(--secondary);
+        }
+
+        .nav-item.active {
+            background: rgba(52, 152, 219, 0.15);
+            color: var(--secondary);
+            border-left-color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* ASISTENTE IA EN SIDEBAR */
+        .assistant-section {
+            margin: 2rem 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.1));
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .assistant-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .assistant-messages {
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .message {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .message.ai {
+            background: rgba(52, 152, 219, 0.1);
+            border-left: 3px solid var(--secondary);
+        }
+
+        .message.user {
+            background: rgba(41, 128, 185, 0.1);
+            text-align: right;
+            border-right: 3px solid var(--accent);
+        }
+
+        .assistant-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .assistant-input input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        /* CARDS Y COMPONENTES */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .stat-icon.tareas { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .stat-icon.eventos { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .stat-icon.bitacoras { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .stat-icon.productividad { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* CALENDARIO */
+        .calendar-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .current-month {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .calendar-day-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 1rem;
+            min-height: 100px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        .calendar-day.today {
+            background: #e3f2fd;
+        }
+
+        .day-number {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin: 2px 0;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* MODALES */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        /* TAREAS */
+        .tasks-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .task-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .task-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .task-priority {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .priority-alta { background: #ffeaea; color: #e74c3c; }
+        .priority-media { background: #fff4e6; color: #f39c12; }
+        .priority-baja { background: #e8f6f3; color: #27ae60; }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--secondary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            background: var(--secondary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* BITACORAS */
+        .bitacoras-list {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .bitacora-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bitacora-item:last-child {
+            border-bottom: none;
+        }
+
+        .bitacora-date {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .bitacora-modalidad {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .modalidad-teletrabajo { background: #e8f6f3; color: #27ae60; }
+        .modalidad-oficina { background: #e3f2fd; color: #3498db; }
+
+        /* ENLACES SYMBALOO */
+        .enlaces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .enlace-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .enlace-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--secondary);
+        }
+
+        .enlace-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .enlace-title {
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tasks-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                font-size: 0.8rem;
+            }
+            
+            .calendar-day {
+                padding: 0.5rem;
+                min-height: 80px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- ESTRUCTURA HTML UNIFICADA (SE OMITE POR EXTENSIDAD) -->
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar con Asistente IA -->
-            <div class="col-md-3 col-lg-2 p-0 sidebar">
-                <div class="p-3">
-                    <h4><i class="fas fa-tasks me-2"></i>DRTE MEP</h4>
-                    <hr class="bg-light">
-                    <div class="mb-4 p-3 bg-dark rounded">
-                        <h6><i class="fas fa-robot"></i> Asistente IA</h6>
-                        <div id="chatContainer" style="height: 250px; overflow-y: auto;" class="mb-2"></div>
-                        <div class="input-group">
-                            <input type="text" id="userQuery" class="form-control form-control-sm" placeholder="Pregunta algo...">
-                            <button class="btn btn-sm btn-outline-light" onclick="handleAIQuery()"><i class="fas fa-paper-plane"></i></button>
-                        </div>
-                    </div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link active" href="#" data-section="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="bitacora"><i class="fas fa-book"></i> Bitácora Diaria</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="tareas"><i class="fas fa-tasks"></i> G. de Tareas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="calendario"><i class="fas fa-calendar-alt"></i> Calendario</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="informes"><i class="fas fa-chart-bar"></i> Informes</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" data-section="enlaces"><i class="fas fa-link"></i> Enlaces</a></li>
-                    </ul>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 1.5rem; color: var(--primary);">DRTE MEP</h1>
+                    <p style="font-size: 0.9rem; color: #666;">Sistema Integral de Gestión</p>
                 </div>
             </div>
-
-            <!-- Contenido Principal -->
-            <div class="col-md-9 col-lg-10 ms-auto p-4">
-                <!-- Notificaciones Toast -->
-                <div id="notifications"></div>
-
-                <!-- Secciones de Contenido Dinámicas -->
-                <div id="contentDashboard" class="content-section">
-                    <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard de Actividades</h2>
-                    <!-- ... (Contenido del dashboard: estadísticas, recordatorios, etc.) ... -->
+            
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
                 </div>
-
-                <div id="contentBitacora" class="content-section d-none">
-                    <h2><i class="fas fa-book me-2"></i>Bitácora Diaria</h2>
-                    <!-- ... (Formulario de bitácora, historial, subida de archivos) ... -->
-                </div>
-
-                <div id="contentTareas" class="content-section d-none">
-                    <h2><i class="fas fa-tasks me-2"></i>Gestión de Tareas</h2>
-                    <!-- ... (Formulario y lista de tareas con prioridades) ... -->
-                </div>
-
-                <div id="contentCalendario" class="content-section d-none">
-                    <h2><i class="fas fa-calendar-alt me-2"></i>Calendario MEP</h2>
-                    <div id="calendar"></div>
-                </div>
-
-                <div id="contentInformes" class="content-section d-none">
-                    <h2><i class="fas fa-chart-bar me-2"></i>Informes y Exportación</h2>
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-cogs"></i> Informe Automático de las 8 AM</h5>
-                            <p class="card-text">Configuración para generar y enviar automáticamente el informe del día anterior a las 8:00 AM.</p>
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="autoReportToggle">
-                                <label class="form-check-label" for="autoReportToggle">Activar informe automático</label>
-                            </div>
-                            <button class="btn btn-primary" onclick="simulateAutoReport()"><i class="fas fa-play-circle"></i> Simular Ejecución Ahora</button>
-                            <button class="btn btn-success" onclick="generateDailyReport()"><i class="fas fa-file-pdf"></i> Generar PDF de Prueba</button>
-                            <hr>
-                            <h6>Estado del Programador:</h6>
-                            <p id="reportStatus">Inactivo. Activa el interruptor para programar el informe.</p>
-                        </div>
-                    </div>
-                    <!-- ... (Otras opciones de exportación manual) ... -->
-                </div>
-
-                <div id="contentEnlaces" class="content-section d-none">
-                    <h2><i class="fas fa-link me-2"></i>Enlaces Institucionales y Frecuentes</h2>
-                    <!-- ... (Gestión de enlaces con generador automático de iconos) ... -->
+                <div>
+                    <div style="font-weight: 600; color: var(--primary);">Asesor Nacional</div>
+                    <div style="font-size: 0.9rem; color: #666;">Ministerio de Educación Pública</div>
                 </div>
             </div>
+        </header>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="nav-section">Navegación</div>
+            <a href="#" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-section="calendario">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Calendario</span>
+            </a>
+            <a href="#" class="nav-item" data-section="tareas">
+                <i class="fas fa-tasks"></i>
+                <span>Gestión de Tareas</span>
+            </a>
+            <a href="#" class="nav-item" data-section="bitacoras">
+                <i class="fas fa-book"></i>
+                <span>Bitácoras</span>
+            </a>
+            <a href="#" class="nav-item" data-section="informes">
+                <i class="fas fa-chart-bar"></i>
+                <span>Informes</span>
+            </a>
+            <a href="#" class="nav-item" data-section="enlaces">
+                <i class="fas fa-link"></i>
+                <span>Enlaces Rápidos</span>
+            </a>
+            <a href="#" class="nav-item" data-section="configuracion">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+            </a>
+
+            <!-- ASISTENTE IA -->
+            <div class="assistant-section">
+                <div class="assistant-title">
+                    <i class="fas fa-robot"></i>
+                    <span>Asistente DRTE</span>
+                </div>
+                <div class="assistant-messages" id="assistantMessages">
+                    <div class="message ai">
+                        ¡Hola! Soy tu asistente. ¿En qué puedo ayudarte hoy?
+                    </div>
+                </div>
+                <div class="assistant-input">
+                    <input type="text" id="assistantInput" placeholder="Escribe tu pregunta...">
+                    <button class="btn btn-primary" onclick="handleAssistantQuery()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2 class="section-title">Dashboard Principal</h2>
+                    <button class="btn btn-primary" onclick="generarInformeRapido()">
+                        <i class="fas fa-file-export"></i> Generar Informe
+                    </button>
+                </div>
+
+                <!-- ESTADÍSTICAS -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon tareas">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="stat-number" id="totalTareas">0</div>
+                        <div class="stat-label">Tareas Pendientes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon eventos">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="stat-number" id="eventosHoy">0</div>
+                        <div class="stat-label">Eventos Hoy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bitacoras">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-number" id="totalBitacoras">0</div>
+                        <div class="stat-label">Bitácoras Registradas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon productividad">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-number" id="productividad">0%</div>
+                        <div class="stat-label">Productividad</div>
+                    </div>
+                </div>
+
+                <!-- PRÓXIMAS ACTIVIDADES -->
+                <div class="section-header" style="margin-top: 2rem;">
+                    <h2 class="section-title">Próximas Actividades</h2>
+                </div>
+                <div class="calendar-container">
+                    <div id="miniCalendar"></div>
+                </div>
+            </section>
+
+            <!-- CALENDARIO -->
+            <section id="calendario" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Calendario Avanzado</h2>
+                    <button class="btn btn-primary" onclick="abrirModalEvento()">
+                        <i class="fas fa-plus"></i> Nuevo Evento
+                    </button>
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <button class="btn-icon" onclick="cambiarMes(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <h3 class="current-month" id="currentMonth">Enero 2026</h3>
+                            <button class="btn-icon" onclick="cambiarMes(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn" onclick="cambiarVista('dia')">Día</button>
+                            <button class="btn" onclick="cambiarVista('semana')">Semana</button>
+                            <button class="btn btn-primary" onclick="cambiarVista('mes')">Mes</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendario se generará dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- GESTIÓN DE TAREAS -->
+            <section id="tareas" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Gestión de Tareas</h2>
+                    <button class="btn btn-primary" onclick="abrirModalTarea()">
+                        <i class="fas fa-plus"></i> Nueva Tarea
+                    </button>
+                </div>
+                <div class="tasks-container" id="tasksList">
+                    <!-- Tareas se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- BITÁCORAS -->
+            <section id="bitacoras" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Sistema de Bitácoras</h2>
+                    <div>
+                        <button class="btn" onclick="abrirModalBitacora('diaria')">
+                            <i class="fas fa-plus"></i> Bitácora Diaria
+                        </button>
+                        <button class="btn btn-primary" onclick="abrirModalBitacora('semanal')">
+                            <i class="fas fa-calendar-week"></i> Plan Semanal
+                        </button>
+                    </div>
+                </div>
+                <div class="bitacoras-list" id="bitacorasList">
+                    <!-- Lista de bitácoras se cargará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- INFORMES -->
+            <section id="informes" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Informes y Exportación</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="generarInforme('diario')" style="cursor: pointer;">
+                        <div class="stat-icon tareas">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-number">Diario</div>
+                        <div class="stat-label">Informe del día</div>
+                    </div>
+                    <div class="stat-card" onclick="generarInforme('semanal')" style="cursor: pointer;">
+                        <div class="stat-icon eventos">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="stat-number">Semanal</div>
+                        <div class="stat-label">Resumen semanal</div>
+                    </div>
+                    <div class="stat-card" onclick="generarInforme('mensual')" style="cursor: pointer;">
+                        <div class="stat-icon bitacoras">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="stat-number">Mensual</div>
+                        <div class="stat-label">Reporte mensual</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ENLACES RÁPIDOS -->
+            <section id="enlaces" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Enlaces Rápidos (Symbaloo)</h2>
+                    <button class="btn btn-primary" onclick="abrirModalEnlace()">
+                        <i class="fas fa-plus"></i> Agregar Enlace
+                    </button>
+                </div>
+                <div class="enlaces-grid" id="enlacesGrid">
+                    <!-- Enlaces se cargarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- CONFIGURACIÓN -->
+            <section id="configuracion" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Configuración del Sistema</h2>
+                </div>
+                <div class="calendar-container">
+                    <h3>Informe Automático de las 8 AM</h3>
+                    <div class="form-group">
+                        <label class="form-label">Activar informe automático</label>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <label class="switch">
+                                <input type="checkbox" id="autoReportToggle">
+                                <span class="slider"></span>
+                            </label>
+                            <span id="reportStatus">Inactivo</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="configurarInformeAuto()">
+                        <i class="fas fa-save"></i> Guardar Configuración
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODALES -->
+    <!-- Modal para Nueva Tarea -->
+    <div class="modal" id="modalTarea">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nueva Tarea</h3>
+                <button class="close-modal" onclick="cerrarModal('modalTarea')">&times;</button>
+            </div>
+            <form id="formTarea">
+                <input type="hidden" id="tareaId">
+                <div class="form-group">
+                    <label class="form-label">Título de la tarea</label>
+                    <input type="text" id="tareaTitulo" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripción</label>
+                    <textarea id="tareaDescripcion" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Prioridad</label>
+                    <select id="tareaPrioridad" class="form-control">
+                        <option value="baja">Baja</option>
+                        <option value="media">Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha límite</label>
+                    <input type="date" id="tareaFechaLimite" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <select id="tareaEstado" class="form-control">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_proceso">En proceso</option>
+                        <option value="completada">Completada</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="cerrarModal('modalTarea')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Tarea</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- TODO EL JAVASCRIPT UNIFICADO AQUÍ (SE OMITE POR EXTENSIDAD) -->
+    <!-- Modal para Eventos -->
+    <div class="modal" id="modalEvento">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nuevo Evento</h3>
+                <button class="close-modal" onclick="cerrarModal('modalEvento')">&times;</button>
+            </div>
+            <form id="formEvento">
+                <div class="form-group">
+                    <label class="form-label">Título del evento</label>
+                    <input type="text" id="eventoTitulo" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo de evento</label>
+                    <select id="eventoTipo" class="form-control">
+                        <option value="reunion">Reunión</option>
+                        <option value="informe">Informe</option>
+                        <option value="teletrabajo">Teletrabajo</option>
+                        <option value="oficina">Oficina</option>
+                        <option value="capacitacion">Capacitación</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha y hora de inicio</label>
+                    <input type="datetime-local" id="eventoInicio" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha y hora de fin</label>
+                    <input type="datetime-local" id="eventoFin" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripción</label>
+                    <textarea id="eventoDescripcion" class="form-control" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="cerrarModal('modalEvento')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Bitácoras -->
+    <div class="modal" id="modalBitacora">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalBitacoraTitle">Nueva Bitácora</h3>
+                <button class="close-modal" onclick="cerrarModal('modalBitacora')">&times;</button>
+            </div>
+            <form id="formBitacora">
+                <input type="hidden" id="bitacoraTipo">
+                <input type="hidden" id="bitacoraId">
+                
+                <div class="form-group" id="bitacoraFechaGroup">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" id="bitacoraFecha" class="form-control" required>
+                </div>
+                
+                <div class="form-group" id="bitacoraModalidadGroup">
+                    <label class="form-label">Modalidad de trabajo</label>
+                    <select id="bitacoraModalidad" class="form-control">
+                        <option value="teletrabajo">Teletrabajo</option>
+                        <option value="oficina">Oficina</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="bitacoraActividadesGroup">
+                    <label class="form-label">Actividades realizadas</label>
+                    <textarea id="bitacoraActividades" class="form-control" rows="4" placeholder="Describe las actividades realizadas..." required></textarea>
+                </div>
+                
+                <div class="form-group" id="bitacoraHorasGroup">
+                    <label class="form-label">Horas invertidas</label>
+                    <input type="number" id="bitacoraHoras" class="form-control" min="0" max="24" step="0.5" required>
+                </div>
+                
+                <div class="form-group" id="bitacoraObservacionesGroup">
+                    <label class="form-label">Observaciones</label>
+                    <textarea id="bitacoraObservaciones" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div id="planSemanalCampos" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Objetivos de la semana</label>
+                        <textarea id="planObjetivos" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="cerrarModal('modalBitacora')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Bitácora</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Enlaces -->
+    <div class="modal" id="modalEnlace">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Agregar Enlace Rápido</h3>
+                <button class="close-modal" onclick="cerrarModal('modalEnlace')">&times;</button>
+            </div>
+            <form id="formEnlace">
+                <div class="form-group">
+                    <label class="form-label">URL del enlace</label>
+                    <input type="url" id="enlaceUrl" class="form-control" placeholder="https://ejemplo.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nombre (se detectará automáticamente)</label>
+                    <input type="text" id="enlaceNombre" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Icono (opcional)</label>
+                    <input type="text" id="enlaceIcono" class="form-control" placeholder="fas fa-envelope">
+                    <small class="text-muted">Usa clases de FontAwesome o deja en blanco para auto-detectar</small>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="cerrarModal('modalEnlace')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Agregar Enlace</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // DATOS Y CONFIGURACIÓN INICIAL
-        let sistema = {
-            tareas: JSON.parse(localStorage.getItem('drte_tareas')) || [],
-            bitacoras: JSON.parse(localStorage.getItem('drte_bitacoras')) || [],
-            enlaces: JSON.parse(localStorage.getItem('drte_enlaces')) || [
-                {nombre: "Outlook", url: "https://outlook.office.com", icono: "fas fa-envelope"},
-                {nombre: "Microsoft Teams", url: "https://teams.microsoft.com", icono: "fas fa-users"},
-                {nombre: "Symbaloo", url: "https://www.symbaloo.com", icono: "fas fa-th"},
-                {nombre: "Copilot", url: "https://copilot.microsoft.com", icono: "fas fa-robot"}
-            ],
-            eventosCalendario: [],
-            autoReportEnabled: false,
-            reportTime: "08:00"
-        };
-
-        // FUNCIONES DEL SISTEMA PRINCIPAL
-        function initSystem() {
-            console.log("Sistema DRTE MEP Inicializado");
-            showNotification('Sistema cargado correctamente', 'success');
-            updateDashboardStats();
-            loadTasks();
-            loadBitacoras();
-            loadEnlaces();
-            initCalendar();
-            initAIChat();
-        }
-
-        // 1. FUNCIÓN PRINCIPAL: INFORME AUTOMÁTICO A LAS 8 AM
-        function setupAutoReport() {
-            const toggle = document.getElementById('autoReportToggle');
-            const statusEl = document.getElementById('reportStatus');
-            if (!toggle || !statusEl) return;
-
-            toggle.checked = sistema.autoReportEnabled;
-            updateReportStatus();
-
-            toggle.addEventListener('change', function() {
-                sistema.autoReportEnabled = this.checked;
-                localStorage.setItem('drte_autoReport', this.checked);
-                updateReportStatus();
-                showNotification(`Informe automático ${this.checked ? 'activado' : 'desactivado'}`, 'info');
-                if (this.checked) scheduleNextReport();
-            });
-        }
-
-        function updateReportStatus() {
-            const statusEl = document.getElementById('reportStatus');
-            if (!statusEl) return;
-            if (sistema.autoReportEnabled) {
-                const now = new Date();
-                const target = new Date(now);
-                const [hours, minutes] = sistema.reportTime.split(':');
-                target.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                if (target < now) target.setDate(target.getDate() + 1);
-                const timeUntil = Math.round((target - now) / 1000 / 60);
-                statusEl.innerHTML = `<span class="text-success"><i class="fas fa-check-circle"></i> Activado. Próximo informe en aproximadamente ${timeUntil} minutos (a las ${sistema.reportTime}).</span>`;
-            } else {
-                statusEl.innerHTML = '<span class="text-danger"><i class="fas fa-pause-circle"></i> Inactivo. Activa el interruptor para programar el informe.</span>';
+        // SISTEMA DE ALMACENAMIENTO
+        class SistemaDRTE {
+            constructor() {
+                this.cargarDatos();
+                this.actualizarDashboard();
             }
-        }
-
-        function scheduleNextReport() {
-            if (!sistema.autoReportEnabled) return;
-            const now = new Date();
-            const target = new Date(now);
-            const [hours, minutes] = sistema.reportTime.split(':');
-            target.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-            if (target < now) target.setDate(target.getDate() + 1);
-            const delay = target - now;
-            setTimeout(executeAutoReport, delay);
-            console.log(`Informe programado para ejecutarse en ${Math.round(delay/1000/60)} minutos.`);
-        }
-
-        function executeAutoReport() {
-            if (!sistema.autoReportEnabled) return;
-            console.log("Ejecutando informe automático de las 8 AM...");
-            showNotification('Generando informe automático del día anterior...', 'info');
-
-            // 1. Generar el contenido del informe (PDF)
-            const reportData = generateDailyReportData();
-            // 2. En un entorno real, aquí se enviaría el PDF por correo (requiere backend)
-            //    Para esta simulación, lo generamos y descargamos localmente.
-            generateAndSendReport(reportData);
-
-            // 3. Reprogramar para el próximo día
-            scheduleNextReport();
-        }
-
-        function simulateAutoReport() {
-            showNotification('Simulando ejecución del informe automático...', 'warning');
-            // Simula la generación y "envío" del informe
-            const reportData = generateDailyReportData();
-            setTimeout(() => {
-                showNotification('✅ Informe simulado generado y "enviado" correctamente. Revisa la consola del navegador para ver los datos.', 'success');
-                console.log("📧 [SIMULACIÓN] Informe listo para enviar por correo:", reportData);
-                alert("Simulación completada. Los datos del informe están en la consola del navegador (F12 -> Consola).");
-            }, 1500);
-        }
-
-        function generateDailyReportData() {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdaysBitacoras = sistema.bitacoras.filter(b => {
-                const bitacoraDate = new Date(b.fecha);
-                return bitacoraDate.toDateString() === yesterday.toDateString();
-            });
-            const pendingTasks = sistema.tareas.filter(t => t.estado !== 'Completada');
-            return {
-                fechaGeneracion: new Date().toISOString(),
-                fechaReporte: yesterday.toLocaleDateString('es-ES'),
-                totalActividades: yesterdaysBitacoras.length,
-                actividades: yesterdaysBitacoras,
-                tareasPendientes: pendingTasks.length,
-                resumenTareas: pendingTasks.slice(0, 5)
-            };
-        }
-
-        function generateAndSendReport(data) {
-            // En un sistema real, aquí se haría una petición a un backend para:
-            // 1. Generar el PDF con jsPDF en el servidor o cliente.
-            // 2. Enviarlo por correo usando Nodemailer (Node.js) o similar.
-            console.log("📊 Datos para el informe del", data.fechaReporte, ":", data);
-            showNotification(`Informe del ${data.fechaReporte} generado. Listo para envío.`, 'success');
-            // Como ejemplo, también ofrecemos descargar un PDF simple.
-            generatePDFReport(data);
-        }
-
-        function generatePDFReport(data) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text("Informe Diario DRTE MEP", 20, 20);
-            doc.setFontSize(11);
-            doc.text(`Fecha del informe: ${data.fechaReporte}`, 20, 30);
-            doc.text(`Generado el: ${new Date().toLocaleDateString('es-ES')} a las ${new Date().toLocaleTimeString('es-ES')}`, 20, 36);
-            doc.line(20, 40, 190, 40);
-            let yPos = 50;
-            doc.setFontSize(14);
-            doc.text("Resumen de Actividades:", 20, yPos);
-            yPos += 10;
-            doc.setFontSize(10);
-            if (data.actividades.length === 0) {
-                doc.text("No se registraron actividades el día anterior.", 25, yPos);
-                yPos += 7;
-            } else {
-                data.actividades.forEach((act, idx) => {
-                    const text = `${idx + 1}. ${act.actividad} (${act.horas} horas)`;
-                    if (yPos > 270) { doc.addPage(); yPos = 20; }
-                    doc.text(text, 25, yPos);
-                    yPos += 7;
+            
+            cargarDatos() {
+                // Cargar datos desde localStorage o usar datos por defecto
+                this.tareas = JSON.parse(localStorage.getItem('drte_tareas')) || [];
+                this.bitacoras = JSON.parse(localStorage.getItem('drte_bitacoras')) || [];
+                this.eventos = JSON.parse(localStorage.getItem('drte_eventos')) || [];
+                this.enlaces = JSON.parse(localStorage.getItem('drte_enlaces')) || [
+                    {
+                        nombre: "Outlook MEP",
+                        url: "https://outlook.office.com",
+                        icono: "fas fa-envelope"
+                    },
+                    {
+                        nombre: "Microsoft Teams",
+                        url: "https://teams.microsoft.com",
+                        icono: "fas fa-users"
+                    },
+                    {
+                        nombre: "Symbaloo",
+                        url: "https://www.symbaloo.com",
+                        icono: "fas fa-th"
+                    },
+                    {
+                        nombre: "Copilot",
+                        url: "https://copilot.microsoft.com",
+                        icono: "fas fa-robot"
+                    },
+                    {
+                        nombre: "Sistema MEP",
+                        url: "https://www.mep.go.cr",
+                        icono: "fas fa-graduation-cap"
+                    }
+                ];
+                this.configuracion = JSON.parse(localStorage.getItem('drte_config')) || {
+                    autoReport: false,
+                    reportTime: "08:00",
+                    theme: "light"
+                };
+            }
+            
+            guardarDatos() {
+                localStorage.setItem('drte_tareas', JSON.stringify(this.tareas));
+                localStorage.setItem('drte_bitacoras', JSON.stringify(this.bitacoras));
+                localStorage.setItem('drte_eventos', JSON.stringify(this.eventos));
+                localStorage.setItem('drte_enlaces', JSON.stringify(this.enlaces));
+                localStorage.setItem('drte_config', JSON.stringify(this.configuracion));
+            }
+            
+            // MÉTODOS PARA TAREAS
+            agregarTarea(tarea) {
+                tarea.id = Date.now();
+                tarea.fechaCreacion = new Date().toISOString();
+                this.tareas.push(tarea);
+                this.guardarDatos();
+                this.actualizarDashboard();
+                return tarea;
+            }
+            
+            actualizarTarea(id, datos) {
+                const index = this.tareas.findIndex(t => t.id == id);
+                if (index !== -1) {
+                    this.tareas[index] = { ...this.tareas[index], ...datos };
+                    this.guardarDatos();
+                    this.actualizarDashboard();
+                }
+            }
+            
+            eliminarTarea(id) {
+                this.tareas = this.tareas.filter(t => t.id != id);
+                this.guardarDatos();
+                this.actualizarDashboard();
+            }
+            
+            obtenerTareasPendientes() {
+                return this.tareas.filter(t => t.estado !== 'completada');
+            }
+            
+            // MÉTODOS PARA BITÁCORAS
+            agregarBitacora(bitacora) {
+                bitacora.id = Date.now();
+                this.bitacoras.push(bitacora);
+                this.guardarDatos();
+                this.actualizarDashboard();
+                return bitacora;
+            }
+            
+            obtenerBitacorasPorTipo(tipo) {
+                return this.bitacoras.filter(b => b.tipo === tipo);
+            }
+            
+            // MÉTODOS PARA EVENTOS
+            agregarEvento(evento) {
+                evento.id = Date.now();
+                this.eventos.push(evento);
+                this.guardarDatos();
+                this.actualizarDashboard();
+                return evento;
+            }
+            
+            obtenerEventosDelDia(fecha) {
+                const fechaStr = fecha.toDateString();
+                return this.eventos.filter(e => {
+                    const eventoFecha = new Date(e.inicio).toDateString();
+                    return eventoFecha === fechaStr;
                 });
             }
-            yPos += 5;
-            doc.setFontSize(14);
-            doc.text("Tareas Pendientes Destacadas:", 20, yPos);
-            yPos += 10;
-            doc.setFontSize(10);
-            if (data.tareasPendientes === 0) {
-                doc.text("¡Excelente! No hay tareas pendientes.", 25, yPos);
-            } else {
-                data.resumenTareas.forEach((tarea, idx) => {
-                    const text = `${idx + 1}. ${tarea.titulo} (Prioridad: ${tarea.prioridad})`;
-                    if (yPos > 270) { doc.addPage(); yPos = 20; }
-                    doc.text(text, 25, yPos);
-                    yPos += 7;
-                });
-                if (data.tareasPendientes > 5) {
-                    doc.text(`... y ${data.tareasPendientes - 5} tareas más.`, 25, yPos);
-                }
+            
+            // MÉTODOS PARA ENLACES
+            agregarEnlace(enlace) {
+                enlace.id = Date.now();
+                this.enlaces.push(enlace);
+                this.guardarDatos();
+                this.actualizarDashboard();
+                return enlace;
             }
-            doc.save(`Informe_DRTE_${data.fechaReporte.replace(/\//g, '-')}.pdf`);
-        }
-
-        // 2. FUNCIONES DEL ASISTENTE IA MEJORADO
-        function initAIChat() {
-            addAIMessage("¡Hola! Soy tu asistente IA del DRTE MEP. Puedo ayudarte a revisar tareas pendientes, generar informes o buscar en tu bitácora. ¿En qué necesitas ayuda?");
-        }
-
-        function handleAIQuery() {
-            const input = document.getElementById('userQuery');
-            const query = input.value.trim();
-            if (!query) return;
-            addUserMessage(query);
-            input.value = '';
-            setTimeout(() => processAIQuery(query), 500);
-        }
-
-        function processAIQuery(query) {
-            const lowerQuery = query.toLowerCase();
-            let response = "";
-            if (lowerQuery.includes('tarea') && (lowerQuery.includes('pendiente') || lowerQuery.includes('hoy'))) {
-                const pending = sistema.tareas.filter(t => t.estado !== 'Completada');
-                response = `Tienes **${pending.length} tareas pendientes**. `;
-                if (pending.length > 0) {
-                    response += "Las próximas son: " + pending.slice(0, 3).map(t => `"${t.titulo}" (${t.prioridad})`).join(', ');
-                }
-            } else if (lowerQuery.includes('informe') || lowerQuery.includes('generar')) {
-                response = "Puedo ayudarte con los informes. Ve a la sección **'Informes'** para generar PDFs o configurar el **envío automático a las 8 AM**. También puedes decirme 'generar informe de ayer'.";
-            } else if (lowerQuery.includes('generar informe de ayer')) {
-                const data = generateDailyReportData();
-                response = `✅ Listo. He preparado el informe del ${data.fechaReporte}. Registraste **${data.totalActividades} actividades** y tienes **${data.tareasPendientes} tareas pendientes**. El PDF se descargará ahora.`;
-                setTimeout(() => generatePDFReport(data), 1000);
-            } else if (lowerQuery.includes('bitácora') || lowerQuery.includes('ayer')) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdays = sistema.bitacoras.filter(b => new Date(b.fecha).toDateString() === yesterday.toDateString());
-                response = `Ayer (${yesterday.toLocaleDateString('es-ES')}) registraste **${yesterdays.length} actividades** en tu bitácora.`;
-            } else if (lowerQuery.includes('hola') || lowerQuery.includes('qué puedes hacer')) {
-                response = "Puedo: 📋 Listar tareas pendientes, 📊 Generar informes, 📅 Revisar bitácoras pasadas, ⏰ Configurar recordatorios. ¡Pregúntame lo que necesites!";
-            } else {
-                response = "Entendí tu pregunta, pero para operaciones más complejas, usa las secciones específicas del sistema (Tareas, Bitácora, Informes). ¿Puedo ayudarte con algo más concreto, como revisar tus tareas pendientes?";
-            }
-            setTimeout(() => addAIMessage(response), 700);
-        }
-
-        function addAIMessage(text) {
-            const chat = document.getElementById('chatContainer');
-            if (!chat) return;
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'chat-message-ai p-2 mb-2';
-            msgDiv.innerHTML = `<small><strong>Asistente:</strong> ${formatMessage(text)}</small>`;
-            chat.appendChild(msgDiv);
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-        function addUserMessage(text) {
-            const chat = document.getElementById('chatContainer');
-            if (!chat) return;
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'chat-message-user p-2 mb-2 text-white';
-            msgDiv.innerHTML = `<small><strong>Tú:</strong> ${text}</small>`;
-            chat.appendChild(msgDiv);
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-        function formatMessage(text) {
-            return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        }
-
-        // 3. FUNCIONES DEL GENERADOR DE ENLACES CON ICONO AUTOMÁTICO
-        async function addEnlaceAutomatico() {
-            const urlInput = document.getElementById('newLinkUrl');
-            const nombreInput = document.getElementById('newLinkName');
-            const iconInput = document.getElementById('newLinkIcon');
-            const url = urlInput.value.trim();
-            let nombre = nombreInput.value.trim();
-            let icono = iconInput.value.trim();
-
-            if (!url) { showNotification('Por favor, ingresa una URL válida.', 'danger'); return; }
-            if (!nombre) {
-                try {
-                    nombre = await fetchSiteTitle(url);
-                } catch (e) {
-                    nombre = "Nuevo Enlace";
-                }
-            }
-            if (!icono) {
-                icono = await fetchSiteFavicon(url);
-            }
-            const nuevoEnlace = { nombre, url, icono };
-            sistema.enlaces.push(nuevoEnlace);
-            localStorage.setItem('drte_enlaces', JSON.stringify(sistema.enlaces));
-            loadEnlaces();
-            urlInput.value = ''; nombreInput.value = ''; iconInput.value = '';
-            showNotification(`Enlace "${nombre}" agregado con éxito.`, 'success');
-        }
-
-        async function fetchSiteTitle(url) {
-            // Esta es una simulación. En un entorno real, necesitarías un proxy CORS o backend.
-            // Por ahora, devuelve un nombre por defecto basado en la URL.
-            try {
-                const domain = new URL(url).hostname.replace('www.', '');
-                return domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1);
-            } catch {
-                return "Sitio Web";
+            
+            // DASHBOARD
+            actualizarDashboard() {
+                const tareasPendientes = this.obtenerTareasPendientes().length;
+                const eventosHoy = this.obtenerEventosDelDia(new Date()).length;
+                const totalBitacoras = this.bitacoras.length;
+                
+                // Calcular productividad (ejemplo simple)
+                const tareasCompletadas = this.tareas.filter(t => t.estado === 'completada').length;
+                const productividad = this.tareas.length > 0 
+                    ? Math.round((tareasCompletadas / this.tareas.length) * 100) 
+                    : 0;
+                
+                // Actualizar UI
+                document.getElementById('totalTareas').textContent = tareasPendientes;
+                document.getElementById('eventosHoy').textContent = eventosHoy;
+                document.getElementById('totalBitacoras').textContent = totalBitacoras;
+                document.getElementById('productividad').textContent = `${productividad}%`;
             }
         }
-
-        async function fetchSiteFavicon(url) {
-            try {
-                const domain = new URL(url).origin;
-                return `${domain}/favicon.ico`;
-            } catch {
-                return "fas fa-external-link-alt";
-            }
-        }
-
-        // 4. FUNCIONES AUXILIARES (Notificaciones, Navegación, etc.)
-        function showNotification(message, type = 'info') {
-            const notifications = document.getElementById('notifications');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type} notification alert-dismissible fade show`;
-            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i> ${message}
-                               <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-            notifications.appendChild(alert);
-            setTimeout(() => alert.remove(), 5000);
-        }
-
-        function navigateTo(sectionId) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.add('d-none'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(sectionId).classList.remove('d-none');
-            event.target.classList.add('active');
-        }
-
-        // INICIALIZACIÓN CUANDO EL DOCUMENTO ESTÁ LISTO
+        
+        // INSTANCIA GLOBAL DEL SISTEMA
+        const sistema = new SistemaDRTE();
+        
+        // INICIALIZACIÓN DEL SISTEMA
         document.addEventListener('DOMContentLoaded', function() {
-            initSystem();
-            setupAutoReport();
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
+            // Configurar navegación
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
                     e.preventDefault();
                     const section = this.getAttribute('data-section');
-                    navigateTo(`content${section.charAt(0).toUpperCase() + section.slice(1)}`);
+                    
+                    // Actualizar navegación activa
+                    document.querySelectorAll('.nav-item').forEach(nav => {
+                        nav.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Mostrar sección correspondiente
+                    document.querySelectorAll('.content-section').forEach(sec => {
+                        sec.classList.remove('active');
+                    });
+                    document.getElementById(section).classList.add('active');
+                    
+                    // Cargar datos específicos de la sección
+                    switch(section) {
+                        case 'tareas':
+                            cargarTareas();
+                            break;
+                        case 'bitacoras':
+                            cargarBitacoras();
+                            break;
+                        case 'enlaces':
+                            cargarEnlaces();
+                            break;
+                        case 'calendario':
+                            inicializarCalendario();
+                            break;
+                    }
                 });
             });
-            document.getElementById('userQuery').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') handleAIQuery();
+            
+            // Configurar formularios
+            document.getElementById('formTarea').addEventListener('submit', function(e) {
+                e.preventDefault();
+                guardarTarea();
             });
-            // Programar la primera ejecución del informe si está activado
-            if (sistema.autoReportEnabled) scheduleNextReport();
+            
+            document.getElementById('formEvento').addEventListener('submit', function(e) {
+                e.preventDefault();
+                guardarEvento();
+            });
+            
+            document.getElementById('formBitacora').addEventListener('submit', function(e) {
+                e.preventDefault();
+                guardarBitacora();
+            });
+            
+            document.getElementById('formEnlace').addEventListener('submit', function(e) {
+                e.preventDefault();
+                guardarEnlace();
+            });
+            
+            // Configurar asistente IA
+            document.getElementById('assistantInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleAssistantQuery();
+                }
+            });
+            
+            // Inicializar calendario
+            inicializarCalendario();
+            
+            // Cargar datos iniciales
+            cargarTareas();
+            cargarBitacoras();
+            cargarEnlaces();
+            
+            // Configurar informe automático
+            const autoReportToggle = document.getElementById('autoReportToggle');
+            if (autoReportToggle) {
+                autoReportToggle.checked = sistema.configuracion.autoReport;
+                actualizarEstadoInforme();
+            }
+            
+            console.log('Sistema DRTE MEP v2.0 inicializado correctamente');
         });
-
-        // ... (El resto de funciones para tareas, bitácoras, calendario, carga de datos, etc., están consolidadas aquí) ...
+        
+        // FUNCIONES PARA TAREAS
+        function cargarTareas() {
+            const container = document.getElementById('tasksList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            sistema.tareas.forEach(tarea => {
+                const tareaCard = document.createElement('div');
+                tareaCard.className = 'task-card';
+                
+                const prioridadClass = `priority-${tarea.prioridad}`;
+                const prioridadText = tarea.prioridad.charAt(0).toUpperCase() + tarea.prioridad.slice(1);
+                
+                tareaCard.innerHTML = `
+                    <div class="task-header">
+                        <div>
+                            <h4 class="task-title">${tarea.titulo}</h4>
+                            <small class="text-muted">Creada: ${new Date(tarea.fechaCreacion).toLocaleDateString()}</small>
+                        </div>
+                        <span class="task-priority ${prioridadClass}">${prioridadText}</span>
+                    </div>
+                    <p>${tarea.descripcion || 'Sin descripción'}</p>
+                    <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+                        <span><i class="far fa-calendar"></i> ${tarea.fechaLimite ? new Date(tarea.fechaLimite).toLocaleDateString() : 'Sin fecha límite'}</span>
+                        <span><i class="far fa-check-circle"></i> ${tarea.estado}</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-icon" onclick="editarTarea(${tarea.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" onclick="eliminarTarea(${tarea.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ${tarea.estado !== 'completada' ? `
+                            <button class="btn-icon" onclick="completarTarea(${tarea.id})" title="Completar">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(tareaCard);
+            });
+            
+            // Si no hay tareas, mostrar mensaje
+            if (sistema.tareas.length === 0) {
+                container.innerHTML = `
+                    <div class="task-card" style="text-align: center; padding: 3rem;">
+                        <i class="fas fa-tasks" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <h4>No hay tareas registradas</h4>
+                        <p>Comienza agregando tu primera tarea</p>
+                        <button class="btn btn-primary" onclick="abrirModalTarea()">
+                            <i class="fas fa-plus"></i> Crear primera tarea
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function abrirModalTarea(tareaId = null) {
+            const modal = document.getElementById('modalTarea');
+            const form = document.getElementById('formTarea');
+            
+            if (tareaId) {
+                // Modo edición
+                const tarea = sistema.tareas.find(t => t.id == tareaId);
+                if (tarea) {
+                    document.getElementById('tareaId').value = tarea.id;
+                    document.getElementById('tareaTitulo').value = tarea.titulo;
+                    document.getElementById('tareaDescripcion').value = tarea.descripcion || '';
+                    document.getElementById('tareaPrioridad').value = tarea.prioridad;
+                    document.getElementById('tareaFechaLimite').value = tarea.fechaLimite ? tarea.fechaLimite.split('T')[0] : '';
+                    document.getElementById('tareaEstado').value = tarea.estado;
+                }
+            } else {
+                // Modo creación
+                form.reset();
+                document.getElementById('tareaId').value = '';
+                document.getElementById('tareaFechaLimite').value = new Date().toISOString().split('T')[0];
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function guardarTarea() {
+            const tareaId = document.getElementById('tareaId').value;
+            const tareaData = {
+                titulo: document.getElementById('tareaTitulo').value,
+                descripcion: document.getElementById('tareaDescripcion').value,
+                prioridad: document.getElementById('tareaPrioridad').value,
+                fechaLimite: document.getElementById('tareaFechaLimite').value,
+                estado: document.getElementById('tareaEstado').value
+            };
+            
+            if (tareaId) {
+                sistema.actualizarTarea(tareaId, tareaData);
+            } else {
+                sistema.agregarTarea(tareaData);
+            }
+            
+            cerrarModal('modalTarea');
+            cargarTareas();
+            mostrarNotificacion('Tarea guardada correctamente', 'success');
+        }
+        
+        function editarTarea(id) {
+            abrirModalTarea(id);
+        }
+        
+        function eliminarTarea(id) {
+            if (confirm('¿Estás seguro de eliminar esta tarea?')) {
+                sistema.eliminarTarea(id);
+                cargarTareas();
+                mostrarNotificacion('Tarea eliminada correctamente', 'success');
+            }
+        }
+        
+        function completarTarea(id) {
+            sistema.actualizarTarea(id, { estado: 'completada' });
+            cargarTareas();
+            mostrarNotificacion('¡Tarea completada!', 'success');
+        }
+        
+        // FUNCIONES PARA CALENDARIO
+        let fechaActual = new Date();
+        let vistaActual = 'mes';
+        
+        function inicializarCalendario() {
+            renderizarCalendario();
+        }
+        
+        function renderizarCalendario() {
+            const container = document.getElementById('calendarGrid');
+            if (!container) return;
+            
+            // Limpiar contenedor
+            container.innerHTML = '';
+            
+            // Agregar encabezados de días
+            const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            diasSemana.forEach(dia => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = dia;
+                container.appendChild(dayHeader);
+            });
+            
+            // Calcular días del mes
+            const year = fechaActual.getFullYear();
+            const month = fechaActual.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startDay = firstDay.getDay();
+            
+            // Actualizar título del mes
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                               'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('currentMonth').textContent = 
+                `${monthNames[month]} ${year}`;
+            
+            // Días vacíos al inicio
+            for (let i = 0; i < startDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                container.appendChild(emptyDay);
+            }
+            
+            // Días del mes
+            const hoy = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Marcar día actual
+                const currentDate = new Date(year, month, day);
+                if (currentDate.toDateString() === hoy.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Número del día
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = day;
+                dayElement.appendChild(dayNumber);
+                
+                // Eventos del día
+                const eventosDelDia = sistema.obtenerEventosDelDia(currentDate);
+                eventosDelDia.forEach(evento => {
+                    const eventBadge = document.createElement('div');
+                    eventBadge.className = 'event-badge';
+                    eventBadge.textContent = evento.titulo;
+                    eventBadge.style.background = obtenerColorEvento(evento.tipo);
+                    eventBadge.onclick = () => mostrarDetalleEvento(evento.id);
+                    dayElement.appendChild(eventBadge);
+                });
+                
+                container.appendChild(dayElement);
+            }
+        }
+        
+        function obtenerColorEvento(tipo) {
+            const colores = {
+                reunion: '#3498db',
+                informe: '#2ecc71',
+                teletrabajo: '#9b59b6',
+                oficina: '#f39c12',
+                capacitacion: '#e74c3c'
+            };
+            return colores[tipo] || '#95a5a6';
+        }
+        
+        function cambiarMes(delta) {
+            fechaActual.setMonth(fechaActual.getMonth() + delta);
+            renderizarCalendario();
+        }
+        
+        function cambiarVista(vista) {
+            vistaActual = vista;
+            // Aquí se implementaría la lógica para cambiar entre vistas
+            // Por simplicidad, mantenemos vista mensual
+            renderizarCalendario();
+        }
+        
+        function abrirModalEvento() {
+            const modal = document.getElementById('modalEvento');
+            const form = document.getElementById('formEvento');
+            
+            form.reset();
+            
+            // Establecer valores por defecto
+            const ahora = new Date();
+            const manana = new Date(ahora);
+            manana.setDate(manana.getDate() + 1);
+            
+            document.getElementById('eventoInicio').value = 
+                ahora.toISOString().slice(0, 16);
+            document.getElementById('eventoFin').value = 
+                manana.toISOString().slice(0, 16);
+            
+            modal.classList.add('active');
+        }
+        
+        function guardarEvento() {
+            const eventoData = {
+                titulo: document.getElementById('eventoTitulo').value,
+                tipo: document.getElementById('eventoTipo').value,
+                inicio: document.getElementById('eventoInicio').value,
+                fin: document.getElementById('eventoFin').value,
+                descripcion: document.getElementById('eventoDescripcion').value
+            };
+            
+            sistema.agregarEvento(eventoData);
+            cerrarModal('modalEvento');
+            renderizarCalendario();
+            mostrarNotificacion('Evento guardado correctamente', 'success');
+        }
+        
+        // FUNCIONES PARA BITÁCORAS
+        function cargarBitacoras() {
+            const container = document.getElementById('bitacorasList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            // Ordenar bitácoras por fecha (más recientes primero)
+            const bitacorasOrdenadas = [...sistema.bitacoras].sort((a, b) => {
+                return new Date(b.fecha) - new Date(a.fecha);
+            });
+            
+            bitacorasOrdenadas.forEach(bitacora => {
+                const bitacoraItem = document.createElement('div');
+                bitacoraItem.className = 'bitacora-item';
+                
+                const tipoTexto = bitacora.tipo === 'diaria' ? 'Bitácora Diaria' : 
+                                bitacora.tipo === 'semanal' ? 'Plan Semanal' : 'Bitácora';
+                
+                const modalidadClass = `modalidad-${bitacora.modalidad || 'teletrabajo'}`;
+                const modalidadText = bitacora.modalidad === 'teletrabajo' ? 'Teletrabajo' : 'Oficina';
+                
+                bitacoraItem.innerHTML = `
+                    <div>
+                        <div class="bitacora-date">
+                            ${new Date(bitacora.fecha).toLocaleDateString('es-ES', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                            })}
+                        </div>
+                        <small>${tipoTexto}</small>
+                    </div>
+                    <div>
+                        <span class="bitacora-modalidad ${modalidadClass}">${modalidadText}</span>
+                        <span style="margin-left: 1rem;">
+                            <i class="far fa-clock"></i> ${bitacora.horas || 0}h
+                        </span>
+                    </div>
+                `;
+                
+                container.appendChild(bitacoraItem);
+            });
+            
+            // Si no hay bitácoras
+            if (sistema.bitacoras.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #666;">
+                        <i class="fas fa-book" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h4>No hay bitácoras registradas</h4>
+                        <p>Comienza registrando tu primera bitácora diaria</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function abrirModalBitacora(tipo) {
+            const modal = document.getElementById('modalBitacora');
+            const form = document.getElementById('formBitacora');
+            const title = document.getElementById('modalBitacoraTitle');
+            
+            form.reset();
+            
+            // Configurar según el tipo
+            document.getElementById('bitacoraTipo').value = tipo;
+            document.getElementById('bitacoraId').value = '';
+            
+            // Establecer fecha actual por defecto
+            document.getElementById('bitacoraFecha').value = new Date().toISOString().split('T')[0];
+            
+            // Mostrar/ocultar campos según tipo
+            const planSemanalCampos = document.getElementById('planSemanalCampos');
+            
+            if (tipo === 'semanal') {
+                title.textContent = 'Plan Semanal';
+                planSemanalCampos.style.display = 'block';
+            } else {
+                title.textContent = 'Bitácora Diaria';
+                planSemanalCampos.style.display = 'none';
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function guardarBitacora() {
+            const tipo = document.getElementById('bitacoraTipo').value;
+            const bitacoraId = document.getElementById('bitacoraId').value;
+            
+            const bitacoraData = {
+                tipo: tipo,
+                fecha: document.getElementById('bitacoraFecha').value,
+                modalidad: document.getElementById('bitacoraModalidad').value,
+                actividades: document.getElementById('bitacoraActividades').value,
+                horas: parseFloat(document.getElementById('bitacoraHoras').value),
+                observaciones: document.getElementById('bitacoraObservaciones').value
+            };
+            
+            if (tipo === 'semanal') {
+                bitacoraData.objetivos = document.getElementById('planObjetivos').value;
+            }
+            
+            if (bitacoraId) {
+                // Actualizar bitácora existente
+                const index = sistema.bitacoras.findIndex(b => b.id == bitacoraId);
+                if (index !== -1) {
+                    sistema.bitacoras[index] = { ...sistema.bitacoras[index], ...bitacoraData };
+                    sistema.guardarDatos();
+                }
+            } else {
+                sistema.agregarBitacora(bitacoraData);
+            }
+            
+            cerrarModal('modalBitacora');
+            cargarBitacoras();
+            mostrarNotificacion('Bitácora guardada correctamente', 'success');
+        }
+        
+        // FUNCIONES PARA ENLACES
+        function cargarEnlaces() {
+            const container = document.getElementById('enlacesGrid');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            sistema.enlaces.forEach(enlace => {
+                const enlaceCard = document.createElement('a');
+                enlaceCard.className = 'enlace-card';
+                enlaceCard.href = enlace.url;
+                enlaceCard.target = '_blank';
+                enlaceCard.rel = 'noopener noreferrer';
+                
+                enlaceCard.innerHTML = `
+                    <div class="enlace-icon">
+                        <i class="${enlace.icono || 'fas fa-external-link-alt'}"></i>
+                    </div>
+                    <div class="enlace-title">${enlace.nombre}</div>
+                `;
+                
+                container.appendChild(enlaceCard);
+            });
+        }
+        
+        async function abrirModalEnlace() {
+            const modal = document.getElementById('modalEnlace');
+            const form = document.getElementById('formEnlace');
+            
+            form.reset();
+            modal.classList.add('active');
+        }
+        
+        async function guardarEnlace() {
+            const url = document.getElementById('enlaceUrl').value;
+            let nombre = document.getElementById('enlaceNombre').value;
+            let icono = document.getElementById('enlaceIcono').value;
+            
+            // Si no hay nombre, intentar obtenerlo de la URL
+            if (!nombre && url) {
+                try {
+                    // Extraer nombre del dominio
+                    const urlObj = new URL(url);
+                    nombre = urlObj.hostname.replace('www.', '').split('.')[0];
+                    nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+                } catch (e) {
+                    nombre = 'Nuevo Enlace';
+                }
+            }
+            
+            // Si no hay icono, usar uno por defecto basado en el dominio
+            if (!icono && url) {
+                try {
+                    const urlObj = new URL(url);
+                    const dominio = urlObj.hostname;
+                    
+                    // Mapeo de dominios comunes a iconos
+                    const iconosMap = {
+                        'outlook': 'fas fa-envelope',
+                        'teams': 'fas fa-users',
+                        'google': 'fab fa-google',
+                        'github': 'fab fa-github',
+                        'youtube': 'fab fa-youtube',
+                        'mep': 'fas fa-graduation-cap',
+                        'symbaloo': 'fas fa-th'
+                    };
+                    
+                    for (const [key, value] of Object.entries(iconosMap)) {
+                        if (dominio.includes(key)) {
+                            icono = value;
+                            break;
+                        }
+                    }
+                    
+                    if (!icono) {
+                        // Icono por defecto
+                        icono = 'fas fa-external-link-alt';
+                    }
+                } catch (e) {
+                    icono = 'fas fa-external-link-alt';
+                }
+            }
+            
+            const enlaceData = {
+                url: url,
+                nombre: nombre,
+                icono: icono || 'fas fa-external-link-alt'
+            };
+            
+            sistema.agregarEnlace(enlaceData);
+            cerrarModal('modalEnlace');
+            cargarEnlaces();
+            mostrarNotificacion('Enlace agregado correctamente', 'success');
+        }
+        
+        // FUNCIONES PARA INFORMES
+        function generarInforme(tipo) {
+            let contenido = '';
+            let titulo = '';
+            
+            const hoy = new Date();
+            const fechaFormateada = hoy.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            switch(tipo) {
+                case 'diario':
+                    titulo = `Informe Diario - ${fechaFormateada}`;
+                    contenido = generarContenidoInformeDiario();
+                    break;
+                case 'semanal':
+                    titulo = `Informe Semanal - Semana ${getWeekNumber(hoy)}`;
+                    contenido = generarContenidoInformeSemanal();
+                    break;
+                case 'mensual':
+                    titulo = `Informe Mensual - ${hoy.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`;
+                    contenido = generarContenidoInformeMensual();
+                    break;
+            }
+            
+            // Crear ventana de informe
+            const ventanaInforme = window.open('', '_blank');
+            ventanaInforme.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${titulo}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 2rem; }
+                        .header { text-align: center; margin-bottom: 2rem; }
+                        .logo { font-size: 2rem; color: #2c3e50; }
+                        .section { margin-bottom: 2rem; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        .footer { margin-top: 3rem; text-align: right; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="logo">DRTE MEP</div>
+                        <h1>${titulo}</h1>
+                        <p>Generado el: ${new Date().toLocaleDateString('es-ES')}</p>
+                    </div>
+                    ${contenido}
+                    <div class="footer">
+                        <p>Firma: _________________________</p>
+                        <p>Asesor Nacional</p>
+                        <p>Ministerio de Educación Pública</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            ventanaInforme.document.close();
+            
+            mostrarNotificacion(`Informe ${tipo} generado correctamente`, 'success');
+        }
+        
+        function generarContenidoInformeDiario() {
+            const tareasPendientes = sistema.obtenerTareasPendientes();
+            const eventosHoy = sistema.obtenerEventosDelDia(new Date());
+            
+            return `
+                <div class="section">
+                    <h2>Resumen del Día</h2>
+                    <p><strong>Tareas pendientes:</strong> ${tareasPendientes.length}</p>
+                    <p><strong>Eventos programados:</strong> ${eventosHoy.length}</p>
+                </div>
+                <div class="section">
+                    <h2>Tareas Pendientes</h2>
+                    ${tareasPendientes.length > 0 ? 
+                        `<table>
+                            <tr>
+                                <th>Tarea</th>
+                                <th>Prioridad</th>
+                                <th>Fecha Límite</th>
+                            </tr>
+                            ${tareasPendientes.map(tarea => `
+                                <tr>
+                                    <td>${tarea.titulo}</td>
+                                    <td>${tarea.prioridad}</td>
+                                    <td>${tarea.fechaLimite ? new Date(tarea.fechaLimite).toLocaleDateString() : 'No definida'}</td>
+                                </tr>
+                            `).join('')}
+                        </table>` :
+                        '<p>No hay tareas pendientes</p>'
+                    }
+                </div>
+            `;
+        }
+        
+        function getWeekNumber(date) {
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        }
+        
+        function generarInformeRapido() {
+            generarInforme('diario');
+        }
+        
+        // FUNCIONES PARA ASISTENTE IA
+        function handleAssistantQuery() {
+            const input = document.getElementById('assistantInput');
+            const query = input.value.trim();
+            
+            if (!query) return;
+            
+            // Agregar mensaje del usuario
+            agregarMensajeAsistente(query, 'user');
+            input.value = '';
+            
+            // Procesar consulta
+            setTimeout(() => {
+                const respuesta = procesarConsultaAsistente(query);
+                agregarMensajeAsistente(respuesta, 'ai');
+            }, 500);
+        }
+        
+        function procesarConsultaAsistente(query) {
+            const queryLower = query.toLowerCase();
+            
+            // Tareas
+            if (queryLower.includes('tarea') || queryLower.includes('pendiente')) {
+                const tareasPendientes = sistema.obtenerTareasPendientes();
+                if (tareasPendientes.length === 0) {
+                    return "No tienes tareas pendientes. ¡Excelente trabajo!";
+                }
+                return `Tienes ${tareasPendientes.length} tareas pendientes. Las más urgentes son: ${tareasPendientes.slice(0, 3).map(t => t.titulo).join(', ')}`;
+            }
+            
+            // Bitácoras
+            if (queryLower.includes('bitácora') || queryLower.includes('ayer')) {
+                const ayer = new Date();
+                ayer.setDate(ayer.getDate() - 1);
+                const bitacorasAyer = sistema.bitacoras.filter(b => {
+                    const fechaBitacora = new Date(b.fecha);
+                    return fechaBitacora.toDateString() === ayer.toDateString();
+                });
+                
+                if (bitacorasAyer.length === 0) {
+                    return "No registraste bitácoras ayer.";
+                }
+                return `Ayer registraste ${bitacorasAyer.length} bitácoras. Total de horas: ${bitacorasAyer.reduce((sum, b) => sum + (b.horas || 0), 0)}`;
+            }
+            
+            // Informes
+            if (queryLower.includes('informe') || queryLower.includes('reporte')) {
+                return "Puedo ayudarte a generar informes. Ve a la sección 'Informes' o usa los botones del dashboard para generar informes diarios, semanales o mensuales.";
+            }
+            
+            // Eventos
+            if (queryLower.includes('evento') || queryLower.includes('hoy')) {
+                const eventosHoy = sistema.obtenerEventosDelDia(new Date());
+                if (eventosHoy.length === 0) {
+                    return "No tienes eventos programados para hoy.";
+                }
+                return `Hoy tienes ${eventosHoy.length} eventos: ${eventosHoy.map(e => e.titulo).join(', ')}`;
+            }
+            
+            // Saludo
+            if (queryLower.includes('hola') || queryLower.includes('buenos')) {
+                return "¡Hola! Soy tu asistente DRTE. Puedo ayudarte con tareas, bitácoras, eventos e informes. ¿En qué puedo asistirte?";
+            }
+            
+            // Respuesta por defecto
+            return "Entiendo tu pregunta. Para ayudarte mejor, puedes consultarme sobre: tareas pendientes, eventos de hoy, bitácoras de ayer o generar informes.";
+        }
+        
+        function agregarMensajeAsistente(texto, tipo) {
+            const container = document.getElementById('assistantMessages');
+            const mensaje = document.createElement('div');
+            mensaje.className = `message ${tipo}`;
+            mensaje.textContent = tipo === 'user' ? `Tú: ${texto}` : `Asistente: ${texto}`;
+            container.appendChild(mensaje);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // FUNCIONES UTILITARIAS
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            // Crear notificación
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem;
+                background: ${tipo === 'success' ? '#27ae60' : tipo === 'error' ? '#e74c3c' : '#3498db'};
+                color: white;
+                border-radius: 10px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+            
+            // Agregar estilos de animación si no existen
+            if (!document.getElementById('notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        function configurarInformeAuto() {
+            const toggle = document.getElementById('autoReportToggle');
+            sistema.configuracion.autoReport = toggle.checked;
+            sistema.guardarDatos();
+            actualizarEstadoInforme();
+            mostrarNotificacion('Configuración guardada correctamente', 'success');
+        }
+        
+        function actualizarEstadoInforme() {
+            const statusElement = document.getElementById('reportStatus');
+            if (!statusElement) return;
+            
+            if (sistema.configuracion.autoReport) {
+                statusElement.textContent = `Activo - Se enviará a las ${sistema.configuracion.reportTime}`;
+                statusElement.style.color = '#27ae60';
+                
+                // Programar siguiente informe
+                programarInformeAuto();
+            } else {
+                statusElement.textContent = 'Inactivo';
+                statusElement.style.color = '#e74c3c';
+            }
+        }
+        
+        function programarInformeAuto() {
+            if (!sistema.configuracion.autoReport) return;
+            
+            const ahora = new Date();
+            const [horas, minutos] = sistema.configuracion.reportTime.split(':');
+            const horaObjetivo = new Date(ahora);
+            horaObjetivo.setHours(horas, minutos, 0, 0);
+            
+            // Si ya pasó la hora de hoy, programar para mañana
+            if (horaObjetivo < ahora) {
+                horaObjetivo.setDate(horaObjetivo.getDate() + 1);
+            }
+            
+            const tiempoHastaObjetivo = horaObjetivo - ahora;
+            
+            console.log(`Informe automático programado para: ${horaObjetivo.toLocaleString()}`);
+            
+            // Programar ejecución
+            setTimeout(() => {
+                if (sistema.configuracion.autoReport) {
+                    ejecutarInformeAuto();
+                    // Programar siguiente ejecución (24 horas después)
+                    setTimeout(programarInformeAuto, 24 * 60 * 60 * 1000);
+                }
+            }, tiempoHastaObjetivo);
+        }
+        
+        function ejecutarInformeAuto() {
+            console.log('Ejecutando informe automático...');
+            
+            // Generar informe diario
+            generarInforme('diario');
+            
+            // Mostrar notificación
+            mostrarNotificacion('Informe automático generado y listo para enviar', 'success');
+            
+            // En un sistema real, aquí se enviaría el informe por correo
+            // Esta funcionalidad requiere backend
+        }
+        
+        // EXPORTAR FUNCIONES GLOBALES
+        window.abrirModalTarea = abrirModalTarea;
+        window.editarTarea = editarTarea;
+        window.eliminarTarea = eliminarTarea;
+        window.completarTarea = completarTarea;
+        window.abrirModalEvento = abrirModalEvento;
+        window.abrirModalBitacora = abrirModalBitacora;
+        window.abrirModalEnlace = abrirModalEnlace;
+        window.generarInforme = generarInforme;
+        window.generarInformeRapido = generarInformeRapido;
+        window.handleAssistantQuery = handleAssistantQuery;
+        window.configurarInformeAuto = configurarInformeAuto;
+        window.cerrarModal = cerrarModal;
+        window.cambiarMes = cambiarMes;
+        window.cambiarVista = cambiarVista;
+        
+        // Inicializar programa de informe automático
+        if (sistema.configuracion.autoReport) {
+            programarInformeAuto();
+        }
     </script>
 </body>
 </html>
